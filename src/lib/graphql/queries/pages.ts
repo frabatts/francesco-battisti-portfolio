@@ -13,7 +13,7 @@ export const GET_ALL_PAGES = `
 
 export const GET_PAGE_BY_SLUG = `
   query GetPageBySlug($slug: ID!) {
-    page(id: $slug, idType: SLUG) {
+    page(id: $slug, idType: URI) {
       id
       title
       slug
@@ -22,8 +22,6 @@ export const GET_PAGE_BY_SLUG = `
         node {
           sourceUrl
           altText
-          width
-          height
         }
       }
     }

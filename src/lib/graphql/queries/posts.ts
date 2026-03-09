@@ -11,8 +11,6 @@ export const GET_ALL_POSTS = `
           node {
             sourceUrl
             altText
-            width
-            height
           }
         }
       }
@@ -22,7 +20,7 @@ export const GET_ALL_POSTS = `
 
 export const GET_POST_BY_SLUG = `
   query GetPostBySlug($slug: ID!) {
-    post(id: $slug, idType: SLUG) {
+    post(id: $slug, idType: URI) {
       id
       title
       slug
@@ -32,8 +30,6 @@ export const GET_POST_BY_SLUG = `
         node {
           sourceUrl
           altText
-          width
-          height
         }
       }
     }
