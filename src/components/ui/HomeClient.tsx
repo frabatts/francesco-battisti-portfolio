@@ -2,14 +2,21 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { gsap } from "@/lib/gsap/config";
-import { ScrollTrigger } from "@/lib/gsap/config";
+import { gsap, ScrollTrigger } from "@/lib/gsap/config";
+import { useReveal } from "@/animations/useReveal";
 
 interface Page {
   id: string;
   title: string;
   slug: string;
 }
+
+const SERVICES = [
+  { number: "01", title: "Branding", desc: "Identità visiva che lascia il segno." },
+  { number: "02", title: "Web Design", desc: "Esperienze digitali fluide e memorabili." },
+  { number: "03", title: "Motion", desc: "Animazioni che danno vita ai brand." },
+  { number: "04", title: "Strategy", desc: "Direzione creativa con visione." },
+];
 
 export default function HomeClient({ pages }: { pages: Page[] }) {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -18,9 +25,12 @@ export default function HomeClient({ pages }: { pages: Page[] }) {
   const lineRef = useRef<HTMLDivElement>(null);
   const marqueeRef = useRef<HTMLDivElement>(null);
 
+  // Reveal hooks
+  const servicesRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.1 });
+  const pagesRef = useReveal<HTMLDivElement>({ direction: "fade", delay: 0.2 });
+
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Hero entrance
       const tl = gsap.timeline({ delay: 0.3 });
 
       tl.fromTo(
@@ -41,7 +51,6 @@ export default function HomeClient({ pages }: { pages: Page[] }) {
           "-=0.4"
         );
 
-      // Marquee scroll
       if (marqueeRef.current) {
         gsap.to(marqueeRef.current, {
           xPercent: -50,
@@ -73,7 +82,6 @@ export default function HomeClient({ pages }: { pages: Page[] }) {
           position: "relative",
         }}
       >
-        {/* Line */}
         <div
           ref={lineRef}
           style={{
@@ -86,7 +94,6 @@ export default function HomeClient({ pages }: { pages: Page[] }) {
           }}
         />
 
-        {/* Label top right */}
         <div
           style={{
             position: "absolute",
@@ -102,7 +109,6 @@ export default function HomeClient({ pages }: { pages: Page[] }) {
           Creative Studio — Est. 2024
         </div>
 
-        {/* Main title */}
         <div style={{ overflow: "hidden", marginBottom: "2rem" }}>
           <h1
             ref={titleRef}
@@ -120,14 +126,7 @@ export default function HomeClient({ pages }: { pages: Page[] }) {
           </h1>
         </div>
 
-        {/* Subtitle row */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-          }}
-        >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <p
             ref={subtitleRef}
             style={{
@@ -183,8 +182,7 @@ export default function HomeClient({ pages }: { pages: Page[] }) {
                 fontFamily: "var(--font-display)",
                 fontSize: "clamp(3rem, 6vw, 5rem)",
                 color: i % 2 === 0 ? "var(--color-fg)" : "transparent",
-                WebkitTextStroke:
-                  i % 2 !== 0 ? "1px var(--color-muted)" : "none",
+                WebkitTextStroke: i % 2 !== 0 ? "1px var(--color-muted)" : "none",
                 letterSpacing: "0.05em",
               }}
             >
@@ -194,10 +192,91 @@ export default function HomeClient({ pages }: { pages: Page[] }) {
         </div>
       </section>
 
-      {/* Pages section */}
+      {/* Services */}
+      <section style={{ padding: "8rem 2rem" }}>
+        <div
+          style={{
+            fontSize: "0.7rem",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            opacity: 0.4,
+            marginBottom: "4rem",
+            fontFamily: "var(--font-body)",
+          }}
+        >
+          What we do
+        </div>
+
+        <div
+          ref={servicesRef}
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "1px",
+            backgroundColor: "var(--color-border)",
+          }}
+        >
+          {SERVICES.map((service) => (
+            <div
+              key={service.number}
+              style={{
+                backgroundColor: "var(--color-bg)",
+                padding: "3rem 2rem",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "0.7rem",
+                  opacity: 0.3,
+                  letterSpacing: "0.15em",
+                  display: "block",
+                  marginBottom: "1.5rem",
+                  fontFamily: "var(--font-body)",
+                }}
+              >
+                {service.number}
+              </span>
+              <h3
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: "clamp(2rem, 4vw, 3.5rem)",
+                  marginBottom: "1rem",
+                  lineHeight: 1,
+                }}
+              >
+                {service.title}
+              </h3>
+              <p
+                style={{
+                  fontSize: "0.8rem",
+                  opacity: 0.5,
+                  lineHeight: 1.6,
+                }}
+              >
+                {service.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Pages */}
       {pages.length > 0 && (
-        <section style={{ padding: "8rem 2rem" }}>
+        <section style={{ padding: "4rem 2rem 8rem" }}>
           <div
+            style={{
+              fontSize: "0.7rem",
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              opacity: 0.4,
+              marginBottom: "4rem",
+              fontFamily: "var(--font-body)",
+            }}
+          >
+            Pages
+          </div>
+          <div
+            ref={pagesRef}
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
@@ -215,12 +294,8 @@ export default function HomeClient({ pages }: { pages: Page[] }) {
                   display: "block",
                   transition: "background-color 0.3s ease",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#111")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "var(--color-bg)")
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#111")}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--color-bg)")}
               >
                 <span
                   style={{
@@ -248,7 +323,6 @@ export default function HomeClient({ pages }: { pages: Page[] }) {
         </section>
       )}
 
-      {/* Footer spacer */}
       <section style={{ height: "20vh" }} />
     </main>
   );
