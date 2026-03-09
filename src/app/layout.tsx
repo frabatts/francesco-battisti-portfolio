@@ -4,6 +4,7 @@ import LenisProvider from "@/components/layout/LenisProvider";
 import PageTransition from "@/components/layout/PageTransition";
 import SceneLoader from "@/components/canvas/SceneLoader";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: {
@@ -22,15 +23,13 @@ export default function RootLayout({
     <html lang="it">
       <body suppressHydrationWarning>
         <LenisProvider>
-          {/* Canvas Three.js — dietro tutto */}
           <SceneLoader />
-
-          {/* Contenuto pagina */}
           <div id="content">
             <Header />
             <PageTransition>
               {children}
             </PageTransition>
+            <Footer />
           </div>
         </LenisProvider>
       </body>
