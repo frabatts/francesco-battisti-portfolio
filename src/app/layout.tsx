@@ -5,6 +5,7 @@ import PageTransition from "@/components/layout/PageTransition";
 import SceneLoader from "@/components/canvas/SceneLoader";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import CustomCursor from "@/components/ui/CustomCursor";
 
 export const metadata: Metadata = {
   title: {
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="it">
       <body suppressHydrationWarning>
         <LenisProvider>
+          <CustomCursor />
           <SceneLoader />
           <div id="content">
             <Header />
