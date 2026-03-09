@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import LenisProvider from "@/components/layout/LenisProvider";
 import PageTransition from "@/components/layout/PageTransition";
 import SceneLoader from "@/components/canvas/SceneLoader";
+import Header from "@/components/layout/Header";
 
 export const metadata: Metadata = {
   title: {
@@ -26,6 +27,7 @@ export default function RootLayout({
 
           {/* Contenuto pagina */}
           <div id="content">
+            <Header />
             <PageTransition>
               {children}
             </PageTransition>

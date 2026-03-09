@@ -1,6 +1,4 @@
-import { gql } from "@apollo/client";
-
-export const GET_ALL_POSTS = gql`
+export const GET_ALL_POSTS = `
   query GetAllPosts {
     posts {
       nodes {
@@ -22,7 +20,7 @@ export const GET_ALL_POSTS = gql`
   }
 `;
 
-export const GET_POST_BY_SLUG = gql`
+export const GET_POST_BY_SLUG = `
   query GetPostBySlug($slug: ID!) {
     post(id: $slug, idType: SLUG) {
       id
