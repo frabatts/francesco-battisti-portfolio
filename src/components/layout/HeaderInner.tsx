@@ -15,7 +15,6 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
   const headerRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
 
-  // Animazione entrata header
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
@@ -48,12 +47,12 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
         href="/"
         style={{
           fontFamily: "var(--font-display)",
-          fontSize: "1.4rem",
+          fontSize: "1.6rem",
           letterSpacing: "0.05em",
           color: "var(--color-fg)",
         }}
       >
-        STUDIO
+        FB
       </Link>
 
       {/* Navigation */}

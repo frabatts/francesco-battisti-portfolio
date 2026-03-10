@@ -1,16 +1,11 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+import AboutClient from "@/components/ui/AboutClient";
+
+export const metadata: Metadata = {
+  title: "Chi sono",
+  description: "WordPress Developer freelance con 5 anni di esperienza. Realizzo siti web e e-commerce su misura con attenzione al dettaglio, performance e UX.",
+};
 
 export default function AboutPage() {
-  return (
-    <main>
-      <section style={{ height: "100vh", display: "grid", placeItems: "center" }}>
-        <div style={{ textAlign: "center" }}>
-          <h1>About Page</h1>
-          <Link href="/" style={{ color: "white", marginTop: "1rem", display: "block" }}>
-            ← Torna alla Home
-          </Link>
-        </div>
-      </section>
-    </main>
-  );
+  return <AboutClient />;
 }
