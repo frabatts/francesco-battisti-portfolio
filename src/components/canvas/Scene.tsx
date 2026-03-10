@@ -2,7 +2,7 @@
 
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
-import ParticleSystem from "./ParticleSystem.tsx";
+import ParticleSystem from "./ParticleSystem";
 
 export default function Scene() {
   return (
