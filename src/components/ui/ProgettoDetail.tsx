@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { gsap } from "@/lib/gsap/config";
 
 interface DettagliProgetto {
@@ -11,18 +12,20 @@ interface DettagliProgetto {
   urlProgetto: string;
 }
 
+interface FeaturedImage {
+  node: {
+    sourceUrl: string;
+    altText: string;
+  };
+}
+
 interface ProgettoDetailProps {
   progetto: {
     id: string;
     title: string;
     slug: string;
     content: string;
-    featuredImage?: {
-      node: {
-        sourceUrl: string;
-        altText: string;
-      };
-    };
+    featuredImage?: FeaturedImage;
     dettagliProgetto: DettagliProgetto;
   };
 }
@@ -31,6 +34,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -48,10 +52,16 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           "-=0.4"
         )
         .fromTo(
+          imageRef.current,
+          { opacity: 0, scale: 1.05 },
+          { opacity: 1, scale: 1, duration: 1, ease: "power2.out" },
+          "-=0.3"
+        )
+        .fromTo(
           contentRef.current,
           { opacity: 0, y: 30 },
           { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
-          "-=0.3"
+          "-=0.4"
         );
     });
 
@@ -86,7 +96,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
           onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.4")}
         >
-          {"<- Progetti"}
+          &larr; Progetti
         </Link>
 
         <div style={{ overflow: "hidden", marginBottom: "3rem" }}>
@@ -177,6 +187,27 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           </div>
         </div>
       </section>
+
+      {progetto.featuredImage && (
+        <div
+          ref={imageRef}
+          style={{
+            width: "100%",
+            height: "60vh",
+            position: "relative",
+            overflow: "hidden",
+            opacity: 0,
+          }}
+        >
+          <Image
+            src={progetto.featuredImage.node.sourceUrl}
+            alt={progetto.featuredImage.node.altText || progetto.title}
+            fill
+            style={{ objectFit: "cover" }}
+            priority
+          />
+        </div>
+      )}
 
       <section style={{ padding: "6rem 2rem", maxWidth: "800px" }}>
         <p
