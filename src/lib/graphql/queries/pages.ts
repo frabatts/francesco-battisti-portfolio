@@ -24,6 +24,15 @@ export const GET_PAGE_BY_SLUG = `
           altText
         }
       }
+      seo {
+        title
+        description
+        canonicalUrl
+        openGraph {
+          title
+          description
+        }
+      }
     }
   }
 `;

@@ -41,6 +41,15 @@ export const GET_PROGETTO_BY_SLUG = `
         descrizioneBreve
         urlProgetto
       }
+      seo {
+        title
+        description
+        canonicalUrl
+        openGraph {
+          title
+          description
+        }
+      }
     }
   }
 `;

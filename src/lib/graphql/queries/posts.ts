@@ -32,6 +32,15 @@ export const GET_POST_BY_SLUG = `
           altText
         }
       }
+      seo {
+        title
+        description
+        canonicalUrl
+        openGraph {
+          title
+          description
+        }
+      }
     }
   }
 `;
