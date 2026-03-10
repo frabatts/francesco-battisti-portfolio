@@ -1,5 +1,5 @@
 import { fetchGraphQL } from "@/lib/graphql/client";
-import { GET_PAGE_BY_SLUG } from "@/lib/graphql/queries/pages";
+import { GET_PAGE_BY_SLUG, GET_ALL_PAGES } from "@/lib/graphql/queries/pages";
 import PageTemplate from "@/components/ui/PageTemplate";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -22,6 +22,17 @@ interface PageData {
     content: string;
     seo: SEO;
   } | null;
+}
+
+interface AllPagesData {
+  pages: {
+    nodes: { slug: string }[];
+  };
+}
+
+export async function generateStaticParams() {
+  const data = await fetchGraphQL<AllPagesData>(GET_ALL_PAGES);
+  return data?.pages?.nodes.map((page) => ({ slug: page.slug })) ?? [];
 }
 
 export async function generateMetadata({

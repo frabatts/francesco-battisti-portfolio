@@ -1,5 +1,5 @@
 import { fetchGraphQL } from "@/lib/graphql/client";
-import { GET_PROGETTO_BY_SLUG } from "@/lib/graphql/queries/progetti";
+import { GET_PROGETTO_BY_SLUG, GET_ALL_PROGETTI } from "@/lib/graphql/queries/progetti";
 import { notFound } from "next/navigation";
 import ProgettoDetail from "@/components/ui/ProgettoDetail";
 import type { Metadata } from "next";
@@ -34,6 +34,17 @@ interface ProgettoData {
     };
     seo: SEO;
   } | null;
+}
+
+interface AllProgettiData {
+  progetti: {
+    nodes: { slug: string }[];
+  };
+}
+
+export async function generateStaticParams() {
+  const data = await fetchGraphQL<AllProgettiData>(GET_ALL_PROGETTI);
+  return data?.progetti?.nodes.map((p) => ({ slug: p.slug })) ?? [];
 }
 
 export async function generateMetadata({
