@@ -1,10 +1,22 @@
 "use client";
-
 import { Canvas } from "@react-three/fiber";
-import { Suspense } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import ParticleSystem from "./ParticleSystem";
 
 export default function Scene() {
+  const mouseRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Normalizza le coordinate del mouse da -1 a 1
+      mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   return (
     <Canvas
       camera={{ position: [0, 0, 5], fov: 75 }}
@@ -19,7 +31,7 @@ export default function Scene() {
       }}
     >
       <Suspense fallback={null}>
-        <ParticleSystem />
+        <ParticleSystem mouseRef={mouseRef} />
       </Suspense>
     </Canvas>
   );

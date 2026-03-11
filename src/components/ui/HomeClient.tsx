@@ -311,7 +311,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               fontFamily: "var(--font-body)",
             }}
           >
-            Cosa faccio
+            Servizi e Soluzioni
           </span>
           <Link
             href="/about"
