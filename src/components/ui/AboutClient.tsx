@@ -63,11 +63,45 @@ const PROCESSO = [
   { step: "04", label: "Deploy" },
 ];
 
+const ESPERIENZE = [
+  {
+    azienda: "Francesco Battisti",
+    ruolo: "Owner & WordPress Developer",
+    periodo: "Ago 2025 — Presente",
+    tipo: "Roviano · Freelance",
+  },
+  {
+    azienda: "Making",
+    ruolo: "Web Designer / WordPress Developer",
+    periodo: "Ago 2025 — Presente",
+    tipo: "Roma · Ibrido",
+  },
+  {
+    azienda: "Rovi Spazio Creativo",
+    ruolo: "Collaboratore & WordPress Developer",
+    periodo: "Gen 2026 — Presente",
+    tipo: "Roviano · ETS / Coworking",
+  },
+  {
+  azienda: "arimaslab",
+  ruolo: "Web Designer / WordPress Developer",
+  periodo: "Feb 2023 — Ago 2025",
+  tipo: "Carsoli · Ibrido",
+},
+{
+  azienda: "Consorzio Innovo",
+  ruolo: "Web Designer / WordPress Developer",
+  periodo: "Lug 2020 — Feb 2023",
+  tipo: "Guidonia · In sede",
+},
+];
+
 export default function AboutClient() {
   const heroRef = useReveal<HTMLDivElement>({ direction: "up", delay: 0.2 });
   const bioRef = useReveal<HTMLDivElement>({ direction: "up", delay: 0.1 });
   const valoriRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.1 });
   const stackRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.08 });
+  const esperienzRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.1 });
   const ctaRef = useReveal<HTMLDivElement>({ direction: "fade", delay: 0.2 });
 
   return (
@@ -222,7 +256,7 @@ export default function AboutClient() {
             marginBottom: "4rem",
           }}
         >
-          Il mio approccio
+          Metodologia 
         </p>
 
         <div
@@ -364,6 +398,86 @@ export default function AboutClient() {
                   </p>
                 )}
               </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── ESPERIENZE ── */}
+      <section style={{ padding: "8rem 2rem", borderBottom: "1px solid var(--color-border)" }}>
+        <p
+          style={{
+            fontSize: "0.75rem",
+            letterSpacing: "0.35em",
+            textTransform: "uppercase",
+            opacity: 0.5,
+            fontFamily: "var(--font-body)",
+            marginBottom: "4rem",
+          }}
+        >
+          Esperienze
+        </p>
+
+        <div ref={esperienzRef} style={{ display: "flex", flexDirection: "column" }}>
+          {ESPERIENZE.map((exp, index) => (
+            <div
+              key={exp.azienda}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "220px 1fr auto",
+                gap: "2rem",
+                padding: "2.5rem 0",
+                borderBottom: index < ESPERIENZE.length - 1 ? "1px solid var(--color-border)" : "none",
+                alignItems: "center",
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "0.7rem",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  opacity: 0.5,
+                  fontFamily: "var(--font-body)",
+                }}
+              >
+                {exp.periodo}
+              </span>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+                <span
+                  style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: "clamp(1.5rem, 2.5vw, 2.2rem)",
+                    lineHeight: 1,
+                  }}
+                >
+                  {exp.azienda}
+                </span>
+                <span
+                  style={{
+                    fontSize: "0.8rem",
+                    opacity: 0.6,
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {exp.ruolo}
+                </span>
+              </div>
+
+              {exp.tipo && (
+                <span
+                  style={{
+                    fontSize: "0.7rem",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    opacity: 0.4,
+                    fontFamily: "var(--font-body)",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {exp.tipo}
+                </span>
+              )}
             </div>
           ))}
         </div>

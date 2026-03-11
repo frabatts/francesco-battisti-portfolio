@@ -212,7 +212,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               lineHeight: 1.7,
             }}
           >
-            Realizzo siti web e e-commerce WordPress su misura per PMI, startup e agenzie.
+            Realizzo siti web e e-commerce WordPress su misura per PMI, startup e agenzie.<br></br>
             Qualità, performance e attenzione al dettaglio.
           </p>
 
