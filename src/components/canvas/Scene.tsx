@@ -8,11 +8,9 @@ export default function Scene() {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // Normalizza le coordinate del mouse da -1 a 1
       mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
-
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);

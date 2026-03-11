@@ -1,8 +1,8 @@
 "use client";
-
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { gsap } from "@/lib/gsap/config";
+import { useTransition } from "@/context/TransitionContext";
 
 export default function PageTransition({
   children,
@@ -10,55 +10,54 @@ export default function PageTransition({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const overlayRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const { setIsTransitioning, particleIntensityRef } = useTransition();
+  const isFirstRender = useRef(true);
 
-  // Animazione entrata — ogni volta che cambia la route
   useEffect(() => {
-    const overlay = overlayRef.current;
     const content = contentRef.current;
-    if (!overlay || !content) return;
+    if (!content) return;
 
-    const tl = gsap.timeline();
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      gsap.fromTo(content, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out", delay: 0.2 });
+      return;
+    }
 
-    // Overlay esce verso l'alto
-    tl.set(overlay, { yPercent: 0 })
-      .to(overlay, {
-        yPercent: -100,
-        duration: 0.8,
-        ease: "power3.inOut",
+    const tl = gsap.timeline({
+      onStart: () => setIsTransitioning(true),
+      onComplete: () => setIsTransitioning(false),
+    });
+
+    tl
+      // Vortice si addensa lentamente
+      .to(particleIntensityRef, {
+        current: 1,
+        duration: 1.8,
+        ease: "sine.inOut",
       })
-      // Contenuto entra
-      .fromTo(
-        content,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
-        "-=0.3"
+      // Contenuto sfuma
+      .to(content, {
+        opacity: 0,
+        duration: 0.4,
+        ease: "power2.in",
+      }, "-=0.8")
+      // Pausa al culmine
+      .to({}, { duration: 0.15 })
+      // Reset intensity — particelle già in posizione
+      .set(particleIntensityRef, { current: 0 })
+      // Contenuto nuova pagina entra
+      .fromTo(content,
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power2.out" }
       );
 
-    return () => {
-      tl.kill();
-    };
+    return () => { tl.kill(); };
   }, [pathname]);
 
   return (
-    <>
-      {/* Overlay di transizione */}
-      <div
-        ref={overlayRef}
-        style={{
-          position: "fixed",
-          inset: 0,
-          backgroundColor: "#000",
-          zIndex: 100,
-          transform: "translateY(-100%)",
-        }}
-      />
-
-      {/* Contenuto pagina */}
-      <div ref={contentRef}>
-        {children}
-      </div>
-    </>
+    <div ref={contentRef}>
+      {children}
+    </div>
   );
 }
