@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap, ScrollTrigger } from "@/lib/gsap/config";
 import { useReveal } from "@/animations/useReveal";
@@ -56,6 +56,16 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
   const serviziRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.12 });
   const progettiRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.1 });
   const ctaSezioneRef = useReveal<HTMLDivElement>({ direction: "fade", delay: 0.2 });
+
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -114,19 +124,19 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
       <section
         ref={heroRef}
         style={{
-          height: "100vh",
+          height: "100svh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: "8rem 2rem 4rem",
+          padding: isMobile ? "5rem 1.25rem 2.5rem" : "8rem 2rem 4rem",
           position: "relative",
         }}
       >
         <div
           style={{
             position: "absolute",
-            top: "8rem",
-            right: "2rem",
+            top: isMobile ? "5rem" : "8rem",
+            right: isMobile ? "1.25rem" : "2rem",
             fontSize: "0.75rem",
             letterSpacing: "0.2em",
             textTransform: "uppercase",
@@ -142,8 +152,8 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           style={{
             position: "absolute",
             top: "50%",
-            left: "2rem",
-            right: "2rem",
+            left: isMobile ? "1.25rem" : "2rem",
+            right: isMobile ? "1.25rem" : "2rem",
             height: "1px",
             backgroundColor: "var(--color-border)",
           }}
@@ -154,7 +164,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
             ref={titleRef}
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(2.5rem, 9vw, 10rem)",
+              fontSize: "clamp(3rem, 14vw, 10rem)",
               lineHeight: 0.95,
               color: "var(--color-fg)",
               opacity: 0,
@@ -178,22 +188,23 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
             width: "100%",
             height: "1px",
             backgroundColor: "var(--color-border)",
-            marginBottom: "2rem",
+            marginBottom: isMobile ? "1.5rem" : "2rem",
           }}
         />
 
         <div
           style={{
             display: "flex",
+            flexDirection: isMobile ? "column" : "row",
             justifyContent: "space-between",
-            alignItems: "flex-end",
-            gap: "2rem",
+            alignItems: isMobile ? "flex-start" : "flex-end",
+            gap: isMobile ? "1.5rem" : "2rem",
           }}
         >
           <p
             ref={subtitleRef}
             style={{
-              fontSize: "0.95rem",
+              fontSize: "0.9rem",
               letterSpacing: "0.04em",
               opacity: 0,
               maxWidth: "420px",
@@ -201,11 +212,19 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               color: "var(--color-text-muted)",
             }}
           >
-            Realizzo siti web e e-commerce WordPress su misura per PMI, startup e agenzie.<br />
+            Realizzo siti web e e-commerce WordPress su misura per PMI, startup e agenzie.{" "}
             Qualità, performance e attenzione al dettaglio.
           </p>
 
-          <div ref={ctaRef} style={{ opacity: 0, display: "flex", gap: "2rem", alignItems: "center" }}>
+          <div
+            ref={ctaRef}
+            style={{
+              opacity: 0,
+              display: "flex",
+              gap: isMobile ? "1.5rem" : "2rem",
+              alignItems: "center",
+            }}
+          >
             <Link
               href="/progetti"
               style={{
@@ -243,7 +262,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
       {/* ── MARQUEE ── */}
       <section
         style={{
-          padding: "3rem 0",
+          padding: "2rem 0",
           borderTop: "1px solid var(--color-border)",
           borderBottom: "1px solid var(--color-border)",
           overflow: "hidden",
@@ -253,7 +272,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           ref={marqueeRef}
           style={{
             display: "flex",
-            gap: "3rem",
+            gap: "2rem",
             whiteSpace: "nowrap",
             width: "200%",
           }}
@@ -263,11 +282,11 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               key={i}
               style={{
                 fontFamily: "var(--font-display)",
-                fontSize: "clamp(2rem, 5vw, 4rem)",
+                fontSize: "clamp(1.8rem, 5vw, 4rem)",
                 color: i % 2 === 0 ? "var(--color-fg)" : "transparent",
                 WebkitTextStroke: i % 2 !== 0 ? "1px var(--color-fg)" : "none",
                 letterSpacing: "0.05em",
-                marginRight: "3rem",
+                marginRight: "2rem",
               }}
             >
               {testo}
@@ -277,13 +296,13 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
       </section>
 
       {/* ── SERVIZI ── */}
-      <section style={{ padding: "8rem 2rem" }}>
+      <section style={{ padding: isMobile ? "4rem 1.25rem" : "8rem 2rem" }}>
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "flex-end",
-            marginBottom: "4rem",
+            marginBottom: isMobile ? "2.5rem" : "4rem",
           }}
         >
           <span
@@ -317,7 +336,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           ref={serviziRef}
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
             gap: "1px",
             backgroundColor: "var(--color-border)",
           }}
@@ -327,10 +346,10 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               key={servizio.numero}
               style={{
                 backgroundColor: "var(--color-bg)",
-                padding: "3rem 2rem",
+                padding: isMobile ? "2rem 1.25rem" : "3rem 2rem",
                 display: "flex",
                 flexDirection: "column",
-                gap: "1.5rem",
+                gap: "1rem",
               }}
             >
               <span
@@ -346,7 +365,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               <h3
                 style={{
                   fontFamily: "var(--font-display)",
-                  fontSize: "clamp(1.8rem, 3vw, 2.8rem)",
+                  fontSize: isMobile ? "2rem" : "clamp(1.8rem, 3vw, 2.8rem)",
                   lineHeight: 1,
                 }}
               >
@@ -378,124 +397,10 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
         </div>
       </section>
 
-      {/* ── PROGETTI IN EVIDENZA ── */}
-      {progetti.length > 0 && (
-        <section style={{ padding: "0 2rem 8rem" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-end",
-              marginBottom: "4rem",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "0.75rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "var(--color-text-muted)",
-                fontFamily: "var(--font-body)",
-              }}
-            >
-              Progetti selezionati
-            </span>
-            <Link
-              href="/progetti"
-              style={{
-                fontSize: "0.75rem",
-                letterSpacing: "0.15em",
-                textTransform: "uppercase",
-                color: "var(--color-text-muted)",
-                transition: "color 0.3s ease",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
-            >
-              Tutti i progetti →
-            </Link>
-          </div>
-
-          <div ref={progettiRef} style={{ display: "flex", flexDirection: "column" }}>
-            {progetti.slice(0, 3).map((progetto, index) => (
-              <Link
-                key={progetto.id}
-                href={`/progetti/${progetto.slug}`}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "4rem 1fr auto",
-                  alignItems: "center",
-                  gap: "2rem",
-                  padding: "2.5rem 0",
-                  borderBottom: "1px solid var(--color-border)",
-                  transition: "color 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  const title = e.currentTarget.querySelector(".proj-title") as HTMLElement;
-                  if (title) title.style.color = "var(--color-accent)";
-                }}
-                onMouseLeave={(e) => {
-                  const title = e.currentTarget.querySelector(".proj-title") as HTMLElement;
-                  if (title) title.style.color = "var(--color-fg)";
-                }}
-              >
-                <span
-                  style={{
-                    fontSize: "0.75rem",
-                    color: "var(--color-text-muted)",
-                    letterSpacing: "0.1em",
-                    fontFamily: "var(--font-body)",
-                  }}
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-
-                <div>
-                  <span
-                    className="proj-title"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
-                      display: "block",
-                      marginBottom: "0.4rem",
-                      color: "var(--color-fg)",
-                      transition: "color 0.3s ease",
-                    }}
-                  >
-                    {progetto.title}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: "0.8rem",
-                      color: "var(--color-text-muted)",
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    {progetto.dettagliProgetto.categoria}
-                  </span>
-                </div>
-
-                <span
-                  style={{
-                    fontSize: "0.8rem",
-                    letterSpacing: "0.1em",
-                    color: "var(--color-text-muted)",
-                    fontFamily: "var(--font-body)",
-                  }}
-                >
-                  {progetto.dettagliProgetto.anno}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ── CTA FINALE ── */}
       <section
         style={{
-          padding: "8rem 2rem",
+          padding: isMobile ? "4rem 1.25rem" : "8rem 2rem",
           borderTop: "1px solid var(--color-border)",
           textAlign: "center",
         }}
@@ -507,7 +412,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               letterSpacing: "0.2em",
               textTransform: "uppercase",
               color: "var(--color-text-muted)",
-              marginBottom: "2rem",
+              marginBottom: "1.5rem",
               fontFamily: "var(--font-body)",
             }}
           >
@@ -516,12 +421,12 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           <h2
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(3rem, 8vw, 8rem)",
+              fontSize: isMobile ? "clamp(2.5rem, 12vw, 4rem)" : "clamp(3rem, 8vw, 8rem)",
               lineHeight: 0.9,
-              marginBottom: "3rem",
+              marginBottom: "2.5rem",
             }}
           >
-            Parliamone.
+            Iniziamo.
           </h2>
           <Link
             href="/contatti"

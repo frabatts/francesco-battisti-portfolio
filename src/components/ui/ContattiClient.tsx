@@ -1,41 +1,32 @@
 "use client";
 
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useReveal } from "@/animations/useReveal";
-
-const INFO = [
-  {
-    label: "Email",
-    valore: "info@francescobattisti.com",
-    href: "mailto:info@francescobattisti.com",
-  },
-  {
-    label: "LinkedIn",
-    valore: "francesco-battisti",
-    href: "https://www.linkedin.com/in/francesco-battisti/",
-  },
-  {
-    label: "P.IVA",
-    valore: "18203611001",
-    href: null,
-  },
-];
 
 export default function ContattiClient() {
   const heroRef = useReveal<HTMLDivElement>({ direction: "up", delay: 0.2 });
-  const infoRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.1 });
   const formRef = useReveal<HTMLDivElement>({ direction: "up", delay: 0.2 });
+
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   return (
     <main>
       {/* ── HERO ── */}
       <section
         style={{
-          minHeight: "70vh",
+          minHeight: isMobile ? "50vh" : "70vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: "12rem 2rem 4rem",
+          padding: isMobile ? "7rem 1.25rem 2.5rem" : "12rem 2rem 4rem",
           borderBottom: "1px solid var(--color-border)",
         }}
       >
@@ -45,9 +36,9 @@ export default function ContattiClient() {
               fontSize: "0.75rem",
               letterSpacing: "0.35em",
               textTransform: "uppercase",
-              opacity: 0.5,
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
-              marginBottom: "2rem",
+              marginBottom: "1.5rem",
             }}
           >
             Contatti
@@ -55,9 +46,9 @@ export default function ContattiClient() {
           <h1
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(3rem, 12vw, 13rem)",
+              fontSize: isMobile ? "clamp(3rem, 16vw, 6rem)" : "clamp(3rem, 12vw, 13rem)",
               lineHeight: 0.9,
-              marginBottom: "3rem",
+              marginBottom: isMobile ? "2rem" : "3rem",
             }}
           >
             Hai un
@@ -78,36 +69,36 @@ export default function ContattiClient() {
             style={{
               fontSize: "1rem",
               lineHeight: 1.7,
-              opacity: 0.6,
+              color: "var(--color-text-muted)",
               maxWidth: "500px",
               fontWeight: 300,
             }}
           >
-            Raccontami il tuo progetto.
+            Iniziamo.
           </p>
         </div>
       </section>
-      {/* ── PLACEHOLDER FORM ── */}
-      <section style={{ padding: "8rem 2rem" }}>
+
+      {/* ── FORM ── */}
+      <section style={{ padding: isMobile ? "3rem 1.25rem" : "8rem 2rem" }}>
         <div ref={formRef}>
           <p
             style={{
               fontSize: "0.75rem",
               letterSpacing: "0.35em",
               textTransform: "uppercase",
-              opacity: 0.5,
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
-              marginBottom: "4rem",
+              marginBottom: isMobile ? "2rem" : "4rem",
             }}
           >
             Scrivimi
           </p>
 
-          {/* Placeholder form — sarà sostituito con CF7 */}
           <div
             style={{
               border: "1px solid var(--color-border)",
-              padding: "4rem",
+              padding: isMobile ? "2rem 1.25rem" : "4rem",
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -118,7 +109,7 @@ export default function ContattiClient() {
             <p
               style={{
                 fontSize: "0.85rem",
-                opacity: 0.4,
+                color: "var(--color-text-muted)",
                 letterSpacing: "0.08em",
                 fontFamily: "var(--font-body)",
               }}

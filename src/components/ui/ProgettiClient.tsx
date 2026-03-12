@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap, ScrollTrigger } from "@/lib/gsap/config";
 
@@ -25,17 +25,24 @@ interface Progetto {
 export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Titolo entrata
       gsap.fromTo(
         titleRef.current,
         { yPercent: 100, opacity: 0 },
         { yPercent: 0, opacity: 1, duration: 1, ease: "power3.out", delay: 0.2 }
       );
 
-      // Lista progetti con stagger
       if (listRef.current) {
         const items = listRef.current.querySelectorAll(".progetto-item");
         gsap.fromTo(
@@ -64,11 +71,11 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
       {/* Hero */}
       <section
         style={{
-          minHeight: "50vh",
+          minHeight: isMobile ? "40vh" : "50vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: "0 2rem 4rem",
+          padding: isMobile ? "7rem 1.25rem 2.5rem" : "0 2rem 4rem",
           borderBottom: "1px solid var(--color-border)",
         }}
       >
@@ -77,7 +84,7 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
             fontSize: "0.7rem",
             letterSpacing: "0.2em",
             textTransform: "uppercase",
-            opacity: 0.4,
+            color: "var(--color-text-muted)",
             marginBottom: "1rem",
             fontFamily: "var(--font-body)",
           }}
@@ -89,7 +96,7 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
             ref={titleRef}
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(3rem, 10vw, 10rem)",
+              fontSize: "clamp(3rem, 14vw, 10rem)",
               lineHeight: 0.9,
               opacity: 0,
             }}
@@ -100,50 +107,42 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
       </section>
 
       {/* Lista progetti */}
-      <section style={{ padding: "4rem 2rem" }} ref={listRef}>
+      <section
+        style={{ padding: isMobile ? "2rem 1.25rem" : "4rem 2rem" }}
+        ref={listRef}
+      >
         {progetti.length === 0 ? (
-          <p style={{ opacity: 0.4, fontSize: "0.9rem" }}>
+          <p style={{ color: "var(--color-text-muted)", fontSize: "0.9rem" }}>
             Nessun progetto trovato.
           </p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column" }}>
-            {progetti.map((progetto, index) => (
+            {progetti.map((progetto) => (
               <Link
                 key={progetto.id}
                 href={`/progetti/${progetto.slug}`}
                 className="progetto-item"
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "4rem 1fr auto",
+                  gridTemplateColumns: isMobile ? "1fr" : "1fr auto",
                   alignItems: "center",
-                  gap: "2rem",
-                  padding: "2.5rem 0",
+                  gap: isMobile ? "0.5rem" : "2rem",
+                  padding: isMobile ? "1.75rem 0" : "2.5rem 0",
                   borderBottom: "1px solid var(--color-border)",
                   transition: "opacity 0.3s ease",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.5")}
                 onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
               >
-                {/* Index */}
-                <span
-                  style={{
-                    fontSize: "0.7rem",
-                    opacity: 0.3,
-                    letterSpacing: "0.1em",
-                    fontFamily: "var(--font-body)",
-                  }}
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-
                 {/* Info */}
                 <div>
                   <span
                     style={{
                       fontFamily: "var(--font-display)",
-                      fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
+                      fontSize: isMobile ? "1.8rem" : "clamp(1.5rem, 3vw, 2.5rem)",
                       display: "block",
-                      marginBottom: "0.5rem",
+                      marginBottom: "0.4rem",
+                      color: "var(--color-fg)",
                     }}
                   >
                     {progetto.title}
@@ -151,28 +150,35 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
                   <span
                     style={{
                       fontSize: "0.75rem",
-                      opacity: 0.4,
+                      color: "var(--color-text-muted)",
                       letterSpacing: "0.08em",
                       textTransform: "uppercase",
                     }}
                   >
                     {progetto.dettagliProgetto.categoria}
+                    {isMobile && (
+                      <span style={{ marginLeft: "0.75rem" }}>
+                        · {progetto.dettagliProgetto.anno}
+                      </span>
+                    )}
                   </span>
                 </div>
 
-                {/* Anno */}
-                <span
-                  style={{
-                    fontSize: "0.7rem",
-                    letterSpacing: "0.1em",
-                    opacity: 0.3,
-                    textTransform: "uppercase",
-                    whiteSpace: "nowrap",
-                    fontFamily: "var(--font-body)",
-                  }}
-                >
-                  {progetto.dettagliProgetto.anno}
-                </span>
+                {/* Anno — solo desktop */}
+                {!isMobile && (
+                  <span
+                    style={{
+                      fontSize: "0.7rem",
+                      letterSpacing: "0.1em",
+                      color: "var(--color-text-muted)",
+                      textTransform: "uppercase",
+                      whiteSpace: "nowrap",
+                      fontFamily: "var(--font-body)",
+                    }}
+                  >
+                    {progetto.dettagliProgetto.anno}
+                  </span>
+                )}
               </Link>
             ))}
           </div>

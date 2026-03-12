@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { gsap, ScrollTrigger } from "@/lib/gsap/config";
@@ -37,9 +37,18 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
   const imageWrapRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
 
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // ── ENTRATA ──
       const tl = gsap.timeline({ delay: 0.2 });
 
       tl.fromTo(
@@ -66,8 +75,9 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           "-=0.4"
         );
 
-      // ── PARALLAX sull'immagine ──
-      if (imageRef.current) {
+      // Parallax solo su desktop
+      const isMobileCheck = window.matchMedia("(max-width: 768px)").matches;
+      if (imageRef.current && !isMobileCheck) {
         gsap.to(imageRef.current, {
           yPercent: 15,
           ease: "none",
@@ -89,11 +99,11 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
       {/* ── HERO ── */}
       <section
         style={{
-          minHeight: "70vh",
+          minHeight: isMobile ? "50vh" : "70vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: "0 2rem 4rem",
+          padding: isMobile ? "7rem 1.25rem 2.5rem" : "0 2rem 4rem",
           position: "relative",
         }}
       >
@@ -101,26 +111,26 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           href="/progetti"
           style={{
             position: "absolute",
-            top: "7rem",
-            left: "2rem",
+            top: isMobile ? "5rem" : "7rem",
+            left: isMobile ? "1.25rem" : "2rem",
             fontSize: "0.7rem",
             letterSpacing: "0.15em",
             textTransform: "uppercase",
-            opacity: 0.4,
-            transition: "opacity 0.3s ease",
+            color: "var(--color-text-muted)",
+            transition: "color 0.3s ease",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.4")}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
         >
           &larr; Progetti
         </Link>
 
-        <div style={{ overflow: "hidden", marginBottom: "3rem" }}>
+        <div style={{ overflow: "hidden", marginBottom: isMobile ? "2rem" : "3rem" }}>
           <h1
             ref={titleRef}
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(3rem, 10vw, 10rem)",
+              fontSize: isMobile ? "clamp(2.5rem, 12vw, 6rem)" : "clamp(3rem, 10vw, 10rem)",
               lineHeight: 0.9,
               opacity: 0,
             }}
@@ -129,17 +139,27 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           </h1>
         </div>
 
+        {/* Meta info */}
         <div
           ref={metaRef}
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, auto)",
-            gap: "4rem",
+            gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(3, auto)",
+            gap: isMobile ? "1.5rem" : "4rem",
             opacity: 0,
           }}
         >
           <div>
-            <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.4, display: "block", marginBottom: "0.5rem" }}>
+            <span
+              style={{
+                fontSize: "0.6rem",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "var(--color-text-muted)",
+                display: "block",
+                marginBottom: "0.5rem",
+              }}
+            >
               Categoria
             </span>
             <span style={{ fontSize: "0.9rem" }}>
@@ -148,7 +168,16 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           </div>
 
           <div>
-            <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.4, display: "block", marginBottom: "0.5rem" }}>
+            <span
+              style={{
+                fontSize: "0.6rem",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "var(--color-text-muted)",
+                display: "block",
+                marginBottom: "0.5rem",
+              }}
+            >
               Anno
             </span>
             <span style={{ fontSize: "0.9rem" }}>
@@ -156,24 +185,35 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
             </span>
           </div>
 
-          <div>
-            <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.4, display: "block", marginBottom: "0.5rem" }}>
-              Link
-            </span>
-            <a
-              href={progetto.dettagliProgetto.urlProgetto}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontSize: "0.9rem",
-                color: "var(--color-accent)",
-                borderBottom: "1px solid var(--color-accent)",
-                paddingBottom: "0.1rem",
-              }}
-            >
-              Visita il sito
-            </a>
-          </div>
+          {progetto.dettagliProgetto.urlProgetto && (
+            <div>
+              <span
+                style={{
+                  fontSize: "0.6rem",
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "var(--color-text-muted)",
+                  display: "block",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                Link
+              </span>
+              <a
+                href={progetto.dettagliProgetto.urlProgetto}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: "0.9rem",
+                  color: "var(--color-accent)",
+                  borderBottom: "1px solid var(--color-accent)",
+                  paddingBottom: "0.1rem",
+                }}
+              >
+                Visita il sito
+              </a>
+            </div>
+          )}
         </div>
       </section>
 
@@ -183,20 +223,19 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           ref={imageWrapRef}
           style={{
             width: "100%",
-            height: "70vh",
+            height: isMobile ? "45vh" : "70vh",
             position: "relative",
             overflow: "hidden",
             opacity: 0,
           }}
         >
-          {/* Immagine leggermente più alta per dare spazio al parallax */}
           <div
             ref={imageRef}
             style={{
               position: "absolute",
-              inset: "-15% 0",
+              inset: isMobile ? "0" : "-15% 0",
               width: "100%",
-              height: "130%",
+              height: isMobile ? "100%" : "130%",
             }}
           >
             <Image
@@ -208,7 +247,6 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
             />
           </div>
 
-          {/* Overlay gradient per raccordare con il contenuto sotto */}
           <div
             style={{
               position: "absolute",
@@ -226,15 +264,17 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
       {/* ── CONTENUTO ── */}
       <section
         style={{
-          padding: progetto.featuredImage ? "3rem 2rem 6rem" : "6rem 2rem",
+          padding: progetto.featuredImage
+            ? isMobile ? "2rem 1.25rem 4rem" : "3rem 2rem 6rem"
+            : isMobile ? "3rem 1.25rem" : "6rem 2rem",
           maxWidth: "800px",
         }}
       >
         <p
           style={{
-            fontSize: "1.1rem",
+            fontSize: isMobile ? "1rem" : "1.1rem",
             lineHeight: 1.8,
-            opacity: 0.7,
+            color: "var(--color-text-muted)",
             marginBottom: "3rem",
           }}
         >
@@ -244,7 +284,11 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
         {progetto.content && (
           <div
             ref={contentRef}
-            style={{ fontSize: "1rem", lineHeight: 1.8, opacity: 0.6 }}
+            style={{
+              fontSize: "1rem",
+              lineHeight: 1.8,
+              color: "var(--color-text-muted)",
+            }}
             dangerouslySetInnerHTML={{ __html: progetto.content }}
           />
         )}

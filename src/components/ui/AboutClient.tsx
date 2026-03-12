@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useReveal } from "@/animations/useReveal";
 
 const PROCESSO = [
@@ -102,16 +103,26 @@ export default function AboutClient() {
   const esperienzRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.1 });
   const ctaRef = useReveal<HTMLDivElement>({ direction: "fade", delay: 0.2 });
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
   return (
     <main>
       {/* ── HERO ── */}
       <section
         style={{
-          minHeight: "60vh",
+          minHeight: isMobile ? "50vh" : "60vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: "12rem 2rem 4rem",
+          padding: isMobile ? "7rem 1.25rem 2.5rem" : "12rem 2rem 4rem",
           borderBottom: "1px solid var(--color-border)",
         }}
       >
@@ -123,7 +134,7 @@ export default function AboutClient() {
               textTransform: "uppercase",
               color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
-              marginBottom: "2rem",
+              marginBottom: "1.5rem",
             }}
           >
             Chi sono
@@ -131,9 +142,9 @@ export default function AboutClient() {
           <h1
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(3rem, 10vw, 11rem)",
+              fontSize: "clamp(3rem, 14vw, 11rem)",
               lineHeight: 0.9,
-              marginBottom: "3rem",
+              marginBottom: isMobile ? "2rem" : "3rem",
             }}
           >
             Francesco
@@ -143,10 +154,11 @@ export default function AboutClient() {
             </span>
           </h1>
 
-          {/* Processo */}
+          {/* Processo — 2x2 su mobile, 4 colonne su desktop */}
           <div
             style={{
-              display: "flex",
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4, 1fr)",
               borderTop: "1px solid var(--color-border)",
               borderLeft: "1px solid var(--color-border)",
             }}
@@ -155,8 +167,7 @@ export default function AboutClient() {
               <div
                 key={item.step}
                 style={{
-                  flex: 1,
-                  padding: "1.2rem 1.5rem",
+                  padding: isMobile ? "1rem" : "1.2rem 1.5rem",
                   borderRight: "1px solid var(--color-border)",
                   borderBottom: "1px solid var(--color-border)",
                   display: "flex",
@@ -177,7 +188,7 @@ export default function AboutClient() {
                 <span
                   style={{
                     fontFamily: "var(--font-display)",
-                    fontSize: "clamp(1rem, 2vw, 1.4rem)",
+                    fontSize: isMobile ? "1.1rem" : "clamp(1rem, 2vw, 1.4rem)",
                     letterSpacing: "0.05em",
                   }}
                 >
@@ -192,10 +203,10 @@ export default function AboutClient() {
       {/* ── BIO ── */}
       <section
         style={{
-          padding: "8rem 2rem",
+          padding: isMobile ? "3rem 1.25rem" : "8rem 2rem",
           display: "grid",
-          gridTemplateColumns: "1fr 2fr",
-          gap: "6rem",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr",
+          gap: isMobile ? "1.5rem" : "6rem",
           borderBottom: "1px solid var(--color-border)",
         }}
       >
@@ -216,7 +227,7 @@ export default function AboutClient() {
         <div ref={bioRef} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           <p
             style={{
-              fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
+              fontSize: isMobile ? "1rem" : "clamp(1rem, 1.5vw, 1.25rem)",
               lineHeight: 1.7,
               color: "var(--color-fg)",
               fontWeight: 300,
@@ -238,7 +249,12 @@ export default function AboutClient() {
       </section>
 
       {/* ── VALORI ── */}
-      <section style={{ padding: "8rem 2rem", borderBottom: "1px solid var(--color-border)" }}>
+      <section
+        style={{
+          padding: isMobile ? "3rem 1.25rem" : "8rem 2rem",
+          borderBottom: "1px solid var(--color-border)",
+        }}
+      >
         <p
           style={{
             fontSize: "0.75rem",
@@ -246,7 +262,7 @@ export default function AboutClient() {
             textTransform: "uppercase",
             color: "var(--color-text-muted)",
             fontFamily: "var(--font-body)",
-            marginBottom: "4rem",
+            marginBottom: isMobile ? "2rem" : "4rem",
           }}
         >
           Metodologia
@@ -256,7 +272,7 @@ export default function AboutClient() {
           ref={valoriRef}
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
             gap: "1px",
             backgroundColor: "var(--color-border)",
           }}
@@ -266,10 +282,10 @@ export default function AboutClient() {
               key={v.numero}
               style={{
                 backgroundColor: "var(--color-bg)",
-                padding: "3rem 2rem",
+                padding: isMobile ? "2rem 1.25rem" : "3rem 2rem",
                 display: "flex",
                 flexDirection: "column",
-                gap: "1.5rem",
+                gap: "1rem",
               }}
             >
               <span
@@ -285,7 +301,7 @@ export default function AboutClient() {
               <h3
                 style={{
                   fontFamily: "var(--font-display)",
-                  fontSize: "clamp(1.5rem, 2.5vw, 2.2rem)",
+                  fontSize: isMobile ? "1.8rem" : "clamp(1.5rem, 2.5vw, 2.2rem)",
                   lineHeight: 1,
                 }}
               >
@@ -306,7 +322,12 @@ export default function AboutClient() {
       </section>
 
       {/* ── STACK ── */}
-      <section style={{ padding: "8rem 2rem", borderBottom: "1px solid var(--color-border)" }}>
+      <section
+        style={{
+          padding: isMobile ? "3rem 1.25rem" : "8rem 2rem",
+          borderBottom: "1px solid var(--color-border)",
+        }}
+      >
         <p
           style={{
             fontSize: "0.75rem",
@@ -314,7 +335,7 @@ export default function AboutClient() {
             textTransform: "uppercase",
             color: "var(--color-text-muted)",
             fontFamily: "var(--font-body)",
-            marginBottom: "4rem",
+            marginBottom: isMobile ? "2rem" : "4rem",
           }}
         >
           Stack & strumenti
@@ -326,14 +347,14 @@ export default function AboutClient() {
               key={gruppo.categoria}
               style={{
                 display: "grid",
-                gridTemplateColumns: "220px 1fr",
-                gap: "2rem",
-                padding: "2.5rem 0",
+                gridTemplateColumns: isMobile ? "1fr" : "220px 1fr",
+                gap: isMobile ? "0.75rem" : "2rem",
+                padding: isMobile ? "1.75rem 0" : "2.5rem 0",
                 borderBottom: index < STACK.length - 1 ? "1px solid var(--color-border)" : "none",
                 alignItems: "flex-start",
               }}
             >
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", paddingTop: "0.4rem" }}>
+              <div style={{ display: "flex", flexDirection: "row", gap: "1rem", alignItems: "center", paddingTop: isMobile ? 0 : "0.4rem" }}>
                 <span
                   style={{
                     fontSize: "0.7rem",
@@ -360,14 +381,14 @@ export default function AboutClient() {
                 )}
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem 1.5rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem 1rem" }}>
                   {gruppo.tools.map((tool) => (
                     <span
                       key={tool}
                       style={{
                         fontFamily: "var(--font-display)",
-                        fontSize: "clamp(1.2rem, 2vw, 1.8rem)",
+                        fontSize: isMobile ? "1.3rem" : "clamp(1.2rem, 2vw, 1.8rem)",
                         letterSpacing: "0.05em",
                         color: gruppo.wip ? "var(--color-text-muted)" : "var(--color-fg)",
                       }}
@@ -396,7 +417,12 @@ export default function AboutClient() {
       </section>
 
       {/* ── ESPERIENZE ── */}
-      <section style={{ padding: "8rem 2rem", borderBottom: "1px solid var(--color-border)" }}>
+      <section
+        style={{
+          padding: isMobile ? "3rem 1.25rem" : "8rem 2rem",
+          borderBottom: "1px solid var(--color-border)",
+        }}
+      >
         <p
           style={{
             fontSize: "0.75rem",
@@ -404,7 +430,7 @@ export default function AboutClient() {
             textTransform: "uppercase",
             color: "var(--color-text-muted)",
             fontFamily: "var(--font-body)",
-            marginBottom: "4rem",
+            marginBottom: isMobile ? "2rem" : "4rem",
           }}
         >
           Esperienze
@@ -416,11 +442,11 @@ export default function AboutClient() {
               key={exp.azienda}
               style={{
                 display: "grid",
-                gridTemplateColumns: "220px 1fr auto",
-                gap: "2rem",
-                padding: "2.5rem 0",
+                gridTemplateColumns: isMobile ? "1fr" : "220px 1fr auto",
+                gap: isMobile ? "0.4rem" : "2rem",
+                padding: isMobile ? "1.75rem 0" : "2.5rem 0",
                 borderBottom: index < ESPERIENZE.length - 1 ? "1px solid var(--color-border)" : "none",
-                alignItems: "center",
+                alignItems: isMobile ? "flex-start" : "center",
               }}
             >
               <span
@@ -435,11 +461,11 @@ export default function AboutClient() {
                 {exp.periodo}
               </span>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                 <span
                   style={{
                     fontFamily: "var(--font-display)",
-                    fontSize: "clamp(1.5rem, 2.5vw, 2.2rem)",
+                    fontSize: isMobile ? "1.6rem" : "clamp(1.5rem, 2.5vw, 2.2rem)",
                     lineHeight: 1,
                   }}
                 >
@@ -453,10 +479,14 @@ export default function AboutClient() {
                   }}
                 >
                   {exp.ruolo}
+                  {isMobile && exp.tipo && (
+                    <span style={{ marginLeft: "0.5rem", opacity: 0.6 }}>· {exp.tipo}</span>
+                  )}
                 </span>
               </div>
 
-              {exp.tipo && (
+              {/* Tipo — solo desktop */}
+              {!isMobile && exp.tipo && (
                 <span
                   style={{
                     fontSize: "0.7rem",
@@ -476,7 +506,12 @@ export default function AboutClient() {
       </section>
 
       {/* ── CTA ── */}
-      <section style={{ padding: "8rem 2rem", textAlign: "center" }}>
+      <section
+        style={{
+          padding: isMobile ? "4rem 1.25rem" : "8rem 2rem",
+          textAlign: "center",
+        }}
+      >
         <div ref={ctaRef}>
           <p
             style={{
@@ -484,7 +519,7 @@ export default function AboutClient() {
               letterSpacing: "0.35em",
               textTransform: "uppercase",
               color: "var(--color-text-muted)",
-              marginBottom: "2rem",
+              marginBottom: "1.5rem",
               fontFamily: "var(--font-body)",
             }}
           >
@@ -493,14 +528,22 @@ export default function AboutClient() {
           <h2
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(3rem, 8vw, 8rem)",
+              fontSize: isMobile ? "clamp(3rem, 16vw, 5rem)" : "clamp(3rem, 8vw, 8rem)",
               lineHeight: 0.9,
-              marginBottom: "3rem",
+              marginBottom: "2.5rem",
             }}
           >
             Hai un progetto?
           </h2>
-          <div style={{ display: "flex", gap: "2rem", justifyContent: "center", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "2rem",
+              justifyContent: "center",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <Link
               href="/contatti"
               style={{
@@ -527,7 +570,7 @@ export default function AboutClient() {
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
                 color: "var(--color-text-muted)",
-                transition: "opacity 0.3s ease",
+                transition: "color 0.3s ease",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}

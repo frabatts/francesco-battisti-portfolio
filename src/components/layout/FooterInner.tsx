@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface MenuItem {
   id: string;
@@ -10,6 +11,15 @@ interface MenuItem {
 
 export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
   const year = new Date().getFullYear();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   const normalizeUrl = (url: string) => {
     try {
@@ -24,20 +34,20 @@ export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
     <footer
       style={{
         borderTop: "1px solid var(--color-border)",
-        padding: "3rem 2rem",
+        padding: isMobile ? "2rem 1.25rem" : "3rem 2rem",
         display: "flex",
         flexDirection: "column",
-        gap: "2rem",
+        gap: isMobile ? "1.5rem" : "2rem",
       }}
     >
       {/* Riga superiore: Logo + Nav + LinkedIn */}
       <div
         style={{
           display: "flex",
+          flexDirection: isMobile ? "column" : "row",
           justifyContent: "space-between",
-          alignItems: "center",
-          gap: "2rem",
-          flexWrap: "wrap",
+          alignItems: isMobile ? "flex-start" : "center",
+          gap: isMobile ? "1.25rem" : "2rem",
         }}
       >
         {/* Logo + tagline */}
@@ -72,7 +82,7 @@ export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
             <ul
               style={{
                 display: "flex",
-                gap: "2rem",
+                gap: isMobile ? "1.25rem" : "2rem",
                 listStyle: "none",
                 margin: 0,
                 padding: 0,
@@ -126,15 +136,22 @@ export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
       <div
         style={{
           display: "flex",
+          flexDirection: isMobile ? "column" : "row",
           justifyContent: "space-between",
-          alignItems: "center",
-          gap: "2rem",
-          flexWrap: "wrap",
+          alignItems: isMobile ? "flex-start" : "center",
+          gap: isMobile ? "0.75rem" : "2rem",
           borderTop: "1px solid var(--color-border)",
           paddingTop: "1.5rem",
         }}
       >
-        <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? "0.5rem" : "2rem",
+            flexWrap: "wrap",
+          }}
+        >
           <span
             style={{
               fontSize: "0.65rem",
