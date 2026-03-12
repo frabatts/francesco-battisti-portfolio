@@ -5,6 +5,7 @@ import ParticleSystem from "./ParticleSystem";
 
 export default function Scene() {
   const mouseRef = useRef({ x: 0, y: 0 });
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -12,12 +13,30 @@ export default function Scene() {
       mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
     window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+
+    // Forza pointer-events: none su tutti gli elementi canvas nel DOM
+    // necessario per iOS che ignora lo style React
+    const forceNoPointerEvents = () => {
+      const canvases = document.querySelectorAll("canvas");
+      canvases.forEach((c) => {
+        c.style.pointerEvents = "none";
+        c.style.touchAction = "none";
+      });
+    };
+
+    // Esegui subito e dopo un breve delay per sicurezza
+    forceNoPointerEvents();
+    const t = setTimeout(forceNoPointerEvents, 500);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      clearTimeout(t);
+    };
   }, []);
 
   return (
-    <Canvas
-      camera={{ position: [0, 0, 5], fov: 75 }}
+    <div
+      ref={canvasRef}
       style={{
         position: "fixed",
         top: 0,
@@ -26,11 +45,28 @@ export default function Scene() {
         height: "100%",
         zIndex: 0,
         pointerEvents: "none",
+        touchAction: "none",
       }}
     >
-      <Suspense fallback={null}>
-        <ParticleSystem mouseRef={mouseRef} />
-      </Suspense>
-    </Canvas>
+      <Canvas
+        camera={{ position: [0, 0, 5], fov: 75 }}
+        style={{
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
+          touchAction: "none",
+        }}
+        gl={{ alpha: true }}
+        events={() => ({
+          // Disabilita completamente il sistema eventi di R3F
+          connect: () => {},
+          disconnect: () => {},
+        })}
+      >
+        <Suspense fallback={null}>
+          <ParticleSystem mouseRef={mouseRef} />
+        </Suspense>
+      </Canvas>
+    </div>
   );
 }

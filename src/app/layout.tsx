@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Bebas_Neue, DM_Sans } from "next/font/google";
 import "@/styles/globals.css";
 import LenisProvider from "@/components/layout/LenisProvider";
 import PageTransition from "@/components/layout/PageTransition";
@@ -7,6 +8,21 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CustomCursor from "@/components/ui/CustomCursor";
 import { TransitionProvider } from "@/context/TransitionContext";
+
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const dmSans = DM_Sans({
+  weight: ["300", "400"],
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -41,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="it">
+    <html lang="it" className={`${bebasNeue.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
         <TransitionProvider>
           <LenisProvider>
