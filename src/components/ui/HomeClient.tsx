@@ -122,7 +122,6 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           position: "relative",
         }}
       >
-        {/* Anno top right */}
         <div
           style={{
             position: "absolute",
@@ -138,7 +137,6 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           © 2026
         </div>
 
-        {/* Linea superiore */}
         <div
           ref={line1Ref}
           style={{
@@ -151,7 +149,6 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           }}
         />
 
-        {/* Titolo principale */}
         <div style={{ overflow: "hidden", marginBottom: "1.5rem" }}>
           <h1
             ref={titleRef}
@@ -175,7 +172,6 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           </h1>
         </div>
 
-        {/* Linea inferiore */}
         <div
           ref={line2Ref}
           style={{
@@ -186,7 +182,6 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           }}
         />
 
-        {/* Subtitle + CTA */}
         <div
           style={{
             display: "flex",
@@ -433,10 +428,16 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
                   gap: "2rem",
                   padding: "2.5rem 0",
                   borderBottom: "1px solid var(--color-border)",
-                  transition: "opacity 0.3s ease",
+                  transition: "color 0.3s ease",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.5")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                onMouseEnter={(e) => {
+                  const title = e.currentTarget.querySelector(".proj-title") as HTMLElement;
+                  if (title) title.style.color = "var(--color-accent)";
+                }}
+                onMouseLeave={(e) => {
+                  const title = e.currentTarget.querySelector(".proj-title") as HTMLElement;
+                  if (title) title.style.color = "var(--color-fg)";
+                }}
               >
                 <span
                   style={{
@@ -451,11 +452,14 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
 
                 <div>
                   <span
+                    className="proj-title"
                     style={{
                       fontFamily: "var(--font-display)",
                       fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
                       display: "block",
                       marginBottom: "0.4rem",
+                      color: "var(--color-fg)",
+                      transition: "color 0.3s ease",
                     }}
                   >
                     {progetto.title}

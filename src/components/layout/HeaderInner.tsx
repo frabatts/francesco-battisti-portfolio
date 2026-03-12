@@ -1,5 +1,4 @@
 "use client";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
@@ -78,9 +77,14 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
                     fontWeight: 300,
                     letterSpacing: "0.12em",
                     textTransform: "uppercase",
-                    color: isActive ? "var(--color-accent)" : "var(--color-fg)",
-                    opacity: isActive ? 1 : 0.6,
-                    transition: "opacity 0.3s ease, color 0.3s ease",
+                    color: isActive ? "var(--color-accent)" : "var(--color-text-muted)",
+                    transition: "color 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) e.currentTarget.style.color = "var(--color-fg)";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) e.currentTarget.style.color = "var(--color-text-muted)";
                   }}
                 >
                   {item.label}
