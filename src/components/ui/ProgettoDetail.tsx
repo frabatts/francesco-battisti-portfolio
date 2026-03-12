@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { gsap } from "@/lib/gsap/config";
+import { gsap, ScrollTrigger } from "@/lib/gsap/config";
 
 interface DettagliProgetto {
   categoria: string;
@@ -34,10 +34,12 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const imageWrapRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // ── ENTRATA ──
       const tl = gsap.timeline({ delay: 0.2 });
 
       tl.fromTo(
@@ -52,9 +54,9 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           "-=0.4"
         )
         .fromTo(
-          imageRef.current,
-          { opacity: 0, scale: 1.05 },
-          { opacity: 1, scale: 1, duration: 1, ease: "power2.out" },
+          imageWrapRef.current,
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" },
           "-=0.3"
         )
         .fromTo(
@@ -63,6 +65,20 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
           "-=0.4"
         );
+
+      // ── PARALLAX sull'immagine ──
+      if (imageRef.current) {
+        gsap.to(imageRef.current, {
+          yPercent: 15,
+          ease: "none",
+          scrollTrigger: {
+            trigger: imageWrapRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+      }
     });
 
     return () => ctx.revert();
@@ -70,6 +86,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
 
   return (
     <main>
+      {/* ── HERO ── */}
       <section
         style={{
           minHeight: "70vh",
@@ -77,7 +94,6 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           flexDirection: "column",
           justifyContent: "flex-end",
           padding: "0 2rem 4rem",
-          borderBottom: "1px solid var(--color-border)",
           position: "relative",
         }}
       >
@@ -123,16 +139,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           }}
         >
           <div>
-            <span
-              style={{
-                fontSize: "0.6rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                opacity: 0.4,
-                display: "block",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.4, display: "block", marginBottom: "0.5rem" }}>
               Categoria
             </span>
             <span style={{ fontSize: "0.9rem" }}>
@@ -141,16 +148,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           </div>
 
           <div>
-            <span
-              style={{
-                fontSize: "0.6rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                opacity: 0.4,
-                display: "block",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.4, display: "block", marginBottom: "0.5rem" }}>
               Anno
             </span>
             <span style={{ fontSize: "0.9rem" }}>
@@ -159,16 +157,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           </div>
 
           <div>
-            <span
-              style={{
-                fontSize: "0.6rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                opacity: 0.4,
-                display: "block",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", opacity: 0.4, display: "block", marginBottom: "0.5rem" }}>
               Link
             </span>
             <a
@@ -188,28 +177,59 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
         </div>
       </section>
 
+      {/* ── IMMAGINE FULLWIDTH CON PARALLAX ── */}
       {progetto.featuredImage && (
         <div
-          ref={imageRef}
+          ref={imageWrapRef}
           style={{
             width: "100%",
-            height: "60vh",
+            height: "70vh",
             position: "relative",
             overflow: "hidden",
             opacity: 0,
           }}
         >
-          <Image
-            src={progetto.featuredImage.node.sourceUrl}
-            alt={progetto.featuredImage.node.altText || progetto.title}
-            fill
-            style={{ objectFit: "cover" }}
-            priority
+          {/* Immagine leggermente più alta per dare spazio al parallax */}
+          <div
+            ref={imageRef}
+            style={{
+              position: "absolute",
+              inset: "-15% 0",
+              width: "100%",
+              height: "130%",
+            }}
+          >
+            <Image
+              src={progetto.featuredImage.node.sourceUrl}
+              alt={progetto.featuredImage.node.altText || progetto.title}
+              fill
+              style={{ objectFit: "cover" }}
+              priority
+            />
+          </div>
+
+          {/* Overlay gradient per raccordare con il contenuto sotto */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: "30%",
+              background: "linear-gradient(to bottom, transparent, var(--color-bg))",
+              zIndex: 1,
+            }}
           />
         </div>
       )}
 
-      <section style={{ padding: "6rem 2rem", maxWidth: "800px" }}>
+      {/* ── CONTENUTO ── */}
+      <section
+        style={{
+          padding: progetto.featuredImage ? "3rem 2rem 6rem" : "6rem 2rem",
+          maxWidth: "800px",
+        }}
+      >
         <p
           style={{
             fontSize: "1.1rem",

@@ -3,59 +3,6 @@
 import Link from "next/link";
 import { useReveal } from "@/animations/useReveal";
 
-const STACK = [
-  {
-    categoria: "Progettazione",
-    tools: ["Asana", "Slack", "Figma"],
-    wip: false,
-  },
-  {
-    categoria: "Page Builder",
-    tools: ["Elementor Pro"],
-    wip: false,
-  },
-  {
-    categoria: "Sviluppo",
-    tools: ["WordPress", "WooCommerce", "PHP", "JavaScript", "HTML", "CSS"],
-    wip: false,
-  },
-  {
-    categoria: "SEO & Analytics",
-    tools: ["SEO", "GA4", "GTM", "GSC", "Screaming Frog"],
-    wip: false,
-  },
-  {
-    categoria: "Ricerca & Innovazione",
-    tools: ["WordPress Headless", "WPGraphQL", "Next.js", "GSAP", "Tailwind CSS"],
-    wip: true,
-    nota: "Esploro approcci moderni allo sviluppo web: architetture headless, animazioni avanzate e performance al limite.",
-  },
-  {
-    categoria: "AI & Vibe Coding",
-    tools: ["Claude AI", "Cursor"],
-    wip: true,
-    nota: "Integro l'AI nel workflow di sviluppo per prototipare più velocemente e costruire esperienze più sofisticate.",
-  },
-];
-
-const VALORI = [
-  {
-    numero: "01",
-    titolo: "Esperienza Utente",
-    descrizione: "Siti progettati per un'esperienza fluida e intuitiva. Interazioni e animazioni accompagnano l'utente durante la navigazione.",
-  },
-  {
-    numero: "02",
-    titolo: "Personalizzazione",
-    descrizione: "Ogni progetto è sviluppato su misura in modalità responsive, con completa libertà di design e funzionalità su qualsiasi dispositivo.",
-  },
-  {
-    numero: "03",
-    titolo: "Performance",
-    descrizione: "Ottimizzo ogni elemento per raggiungere standard elevati di SEO, accessibilità, velocità di caricamento e Core Web Vitals.",
-  },
-];
-
 const PROCESSO = [
   { step: "01", label: "Brief" },
   { step: "02", label: "Mockup Figma" },
@@ -63,37 +10,88 @@ const PROCESSO = [
   { step: "04", label: "Deploy" },
 ];
 
+const VALORI = [
+  {
+    numero: "01",
+    titolo: "Esperienza Utente",
+    descrizione: "Ogni scelta di design parte dall'utente finale. Navigazione intuitiva, gerarchie chiare e micro-interazioni che rendono l'esperienza memorabile.",
+  },
+  {
+    numero: "02",
+    titolo: "Personalizzazione",
+    descrizione: "Nessun template uguale all'altro. Ogni progetto viene costruito su misura, integrando le esigenze del cliente con le best practice del settore.",
+  },
+  {
+    numero: "03",
+    titolo: "Performance",
+    descrizione: "Velocità, Core Web Vitals e ottimizzazione SEO non sono optional. Sono il punto di partenza di ogni sito che realizzo.",
+  },
+];
+
+const STACK = [
+  {
+    categoria: "Progettazione",
+    tools: ["Asana", "Slack", "Figma"],
+    wip: false,
+    nota: null,
+  },
+  {
+    categoria: "Page Builder",
+    tools: ["Elementor Pro"],
+    wip: false,
+    nota: null,
+  },
+  {
+    categoria: "Sviluppo",
+    tools: ["WordPress", "WooCommerce", "PHP", "JavaScript", "HTML", "CSS"],
+    wip: false,
+    nota: null,
+  },
+  {
+    categoria: "SEO & Analytics",
+    tools: ["SEO", "GA4", "GTM", "GSC", "Screaming Frog"],
+    wip: false,
+    nota: null,
+  },
+  {
+    categoria: "Ricerca & Innovazione",
+    tools: ["WordPress Headless", "WPGraphQL", "Next.js", "GSAP", "Tailwind CSS"],
+    wip: true,
+    nota: "Stack in fase di esplorazione attiva. Questo sito è il primo progetto headless.",
+  },
+  {
+    categoria: "AI & Vibe Coding",
+    tools: ["Claude AI", "Cursor"],
+    wip: true,
+    nota: "Integrazione AI nel workflow di sviluppo per prototipazione rapida e qualità elevata.",
+  },
+];
+
 const ESPERIENZE = [
   {
-    azienda: "Francesco Battisti",
-    ruolo: "Owner & WordPress Developer",
-    periodo: "Ago 2025 — Presente",
-    tipo: "Roviano · Freelance",
-  },
-  {
-    azienda: "Making",
-    ruolo: "Web Designer / WordPress Developer",
-    periodo: "Ago 2025 — Presente",
-    tipo: "Roma · Ibrido",
-  },
-  {
     azienda: "Rovi Spazio Creativo",
-    ruolo: "Collaboratore & WordPress Developer",
+    ruolo: "WordPress Developer",
     periodo: "Gen 2026 — Presente",
     tipo: "Roviano · ETS / Coworking",
   },
   {
-  azienda: "arimaslab",
-  ruolo: "Web Designer / WordPress Developer",
-  periodo: "Feb 2023 — Ago 2025",
-  tipo: "Carsoli · Ibrido",
-},
-{
-  azienda: "Consorzio Innovo",
-  ruolo: "Web Designer / WordPress Developer",
-  periodo: "Lug 2020 — Feb 2023",
-  tipo: "Guidonia · In sede",
-},
+    azienda: "Making",
+    ruolo: "WordPress Developer",
+    periodo: "Ago 2025 — Presente",
+    tipo: "Roma · Ibrido",
+  },
+  {
+    azienda: "arimaslab",
+    ruolo: "Web Designer / WordPress Developer",
+    periodo: "Feb 2023 — Ago 2025",
+    tipo: "Carsoli · Ibrido",
+  },
+  {
+    azienda: "Consorzio Innovo",
+    ruolo: "Web Designer / WordPress Developer",
+    periodo: "Lug 2020 — Feb 2023",
+    tipo: "Guidonia · In sede",
+  },
 ];
 
 export default function AboutClient() {
@@ -123,7 +121,7 @@ export default function AboutClient() {
               fontSize: "0.75rem",
               letterSpacing: "0.35em",
               textTransform: "uppercase",
-              opacity: 0.5,
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
               marginBottom: "2rem",
             }}
@@ -140,12 +138,7 @@ export default function AboutClient() {
           >
             Francesco
             <br />
-            <span
-              style={{
-                color: "transparent",
-                WebkitTextStroke: "1px var(--color-muted)",
-              }}
-            >
+            <span style={{ color: "transparent", WebkitTextStroke: "1px var(--color-muted)" }}>
               Battisti
             </span>
           </h1>
@@ -174,7 +167,7 @@ export default function AboutClient() {
                 <span
                   style={{
                     fontSize: "0.65rem",
-                    opacity: 0.5,
+                    color: "var(--color-text-muted)",
                     letterSpacing: "0.15em",
                     fontFamily: "var(--font-body)",
                   }}
@@ -212,7 +205,7 @@ export default function AboutClient() {
               fontSize: "0.75rem",
               letterSpacing: "0.35em",
               textTransform: "uppercase",
-              opacity: 0.5,
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
             }}
           >
@@ -225,7 +218,7 @@ export default function AboutClient() {
             style={{
               fontSize: "clamp(1rem, 1.5vw, 1.25rem)",
               lineHeight: 1.7,
-              opacity: 0.9,
+              color: "var(--color-fg)",
               fontWeight: 300,
             }}
           >
@@ -235,7 +228,7 @@ export default function AboutClient() {
             style={{
               fontSize: "0.95rem",
               lineHeight: 1.8,
-              opacity: 0.7,
+              color: "var(--color-text-muted)",
               fontWeight: 300,
             }}
           >
@@ -251,12 +244,12 @@ export default function AboutClient() {
             fontSize: "0.75rem",
             letterSpacing: "0.35em",
             textTransform: "uppercase",
-            opacity: 0.5,
+            color: "var(--color-text-muted)",
             fontFamily: "var(--font-body)",
             marginBottom: "4rem",
           }}
         >
-          Metodologia 
+          Metodologia
         </p>
 
         <div
@@ -282,7 +275,7 @@ export default function AboutClient() {
               <span
                 style={{
                   fontSize: "0.7rem",
-                  opacity: 0.5,
+                  color: "var(--color-text-muted)",
                   letterSpacing: "0.15em",
                   fontFamily: "var(--font-body)",
                 }}
@@ -301,7 +294,7 @@ export default function AboutClient() {
               <p
                 style={{
                   fontSize: "0.9rem",
-                  opacity: 0.75,
+                  color: "var(--color-text-muted)",
                   lineHeight: 1.7,
                 }}
               >
@@ -319,7 +312,7 @@ export default function AboutClient() {
             fontSize: "0.75rem",
             letterSpacing: "0.35em",
             textTransform: "uppercase",
-            opacity: 0.5,
+            color: "var(--color-text-muted)",
             fontFamily: "var(--font-body)",
             marginBottom: "4rem",
           }}
@@ -346,7 +339,7 @@ export default function AboutClient() {
                     fontSize: "0.7rem",
                     letterSpacing: "0.2em",
                     textTransform: "uppercase",
-                    opacity: 0.5,
+                    color: "var(--color-text-muted)",
                     fontFamily: "var(--font-body)",
                   }}
                 >
@@ -359,7 +352,6 @@ export default function AboutClient() {
                       letterSpacing: "0.15em",
                       textTransform: "uppercase",
                       color: "var(--color-accent)",
-                      opacity: 0.8,
                       fontFamily: "var(--font-body)",
                     }}
                   >
@@ -377,7 +369,7 @@ export default function AboutClient() {
                         fontFamily: "var(--font-display)",
                         fontSize: "clamp(1.2rem, 2vw, 1.8rem)",
                         letterSpacing: "0.05em",
-                        opacity: gruppo.wip ? 0.6 : 1,
+                        color: gruppo.wip ? "var(--color-text-muted)" : "var(--color-fg)",
                       }}
                     >
                       {tool}
@@ -388,7 +380,7 @@ export default function AboutClient() {
                   <p
                     style={{
                       fontSize: "0.85rem",
-                      opacity: 0.6,
+                      color: "var(--color-text-muted)",
                       lineHeight: 1.6,
                       fontStyle: "italic",
                       maxWidth: "500px",
@@ -410,7 +402,7 @@ export default function AboutClient() {
             fontSize: "0.75rem",
             letterSpacing: "0.35em",
             textTransform: "uppercase",
-            opacity: 0.5,
+            color: "var(--color-text-muted)",
             fontFamily: "var(--font-body)",
             marginBottom: "4rem",
           }}
@@ -436,7 +428,7 @@ export default function AboutClient() {
                   fontSize: "0.7rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  opacity: 0.5,
+                  color: "var(--color-text-muted)",
                   fontFamily: "var(--font-body)",
                 }}
               >
@@ -456,7 +448,7 @@ export default function AboutClient() {
                 <span
                   style={{
                     fontSize: "0.8rem",
-                    opacity: 0.6,
+                    color: "var(--color-text-muted)",
                     letterSpacing: "0.05em",
                   }}
                 >
@@ -470,7 +462,7 @@ export default function AboutClient() {
                     fontSize: "0.7rem",
                     letterSpacing: "0.1em",
                     textTransform: "uppercase",
-                    opacity: 0.4,
+                    color: "var(--color-text-muted)",
                     fontFamily: "var(--font-body)",
                     whiteSpace: "nowrap",
                   }}
@@ -491,7 +483,7 @@ export default function AboutClient() {
               fontSize: "0.75rem",
               letterSpacing: "0.35em",
               textTransform: "uppercase",
-              opacity: 0.5,
+              color: "var(--color-text-muted)",
               marginBottom: "2rem",
               fontFamily: "var(--font-body)",
             }}
@@ -534,11 +526,11 @@ export default function AboutClient() {
                 fontSize: "0.85rem",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
-                opacity: 0.55,
+                color: "var(--color-text-muted)",
                 transition: "opacity 0.3s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.55")}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
             >
               Vedi i progetti →
             </Link>

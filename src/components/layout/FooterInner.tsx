@@ -11,7 +11,6 @@ interface MenuItem {
 export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
   const year = new Date().getFullYear();
 
-  // Normalizza gli URL rimuovendo il dominio WordPress locale
   const normalizeUrl = (url: string) => {
     try {
       const parsed = new URL(url);
@@ -59,7 +58,7 @@ export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
               fontSize: "0.65rem",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
-              opacity: 0.4,
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
             }}
           >
@@ -89,11 +88,11 @@ export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
                       fontSize: "0.75rem",
                       letterSpacing: "0.12em",
                       textTransform: "uppercase",
-                      opacity: 0.5,
-                      transition: "opacity 0.3s ease",
+                      color: "var(--color-text-muted)",
+                      transition: "color 0.3s ease",
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
                   >
                     {item.label}
                   </Link>
@@ -113,11 +112,11 @@ export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
             fontSize: "0.75rem",
             letterSpacing: "0.12em",
             textTransform: "uppercase",
-            opacity: 0.5,
-            transition: "opacity 0.3s ease",
+            color: "var(--color-text-muted)",
+            transition: "color 0.3s ease",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
         >
           LinkedIn →
         </a>
@@ -141,7 +140,7 @@ export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
               fontSize: "0.65rem",
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              opacity: 0.35,
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
             }}
           >
@@ -153,12 +152,12 @@ export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
               fontSize: "0.65rem",
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              opacity: 0.35,
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
-              transition: "opacity 0.3s ease",
+              transition: "color 0.3s ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.35")}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
           >
             info@francescobattisti.com
           </a>
@@ -170,12 +169,12 @@ export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
               fontSize: "0.65rem",
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              opacity: 0.35,
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
-              transition: "opacity 0.3s ease",
+              transition: "color 0.3s ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.35")}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
           >
             Privacy Policy
           </a>
@@ -186,7 +185,7 @@ export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
             fontSize: "0.65rem",
             letterSpacing: "0.12em",
             textTransform: "uppercase",
-            opacity: 0.35,
+            color: "var(--color-text-muted)",
             fontFamily: "var(--font-body)",
           }}
         >

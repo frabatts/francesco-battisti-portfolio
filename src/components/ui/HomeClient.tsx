@@ -131,14 +131,14 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
             fontSize: "0.75rem",
             letterSpacing: "0.2em",
             textTransform: "uppercase",
-            opacity: 0.5,
+            color: "var(--color-text-muted)",
             fontFamily: "var(--font-body)",
           }}
         >
           © 2026
         </div>
 
-        {/* Linea superiore centrale */}
+        {/* Linea superiore */}
         <div
           ref={line1Ref}
           style={{
@@ -167,16 +167,9 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
             <br />
             Battisti
             <br />
-            <span style={{ color: "var(--color-accent)" }}>
-              WordPress
-            </span>
+            <span style={{ color: "var(--color-accent)" }}>WordPress</span>
             <br />
-            <span
-              style={{
-                color: "transparent",
-                WebkitTextStroke: "1px var(--color-muted)",
-              }}
-            >
+            <span style={{ color: "transparent", WebkitTextStroke: "1px var(--color-muted)" }}>
               Developer
             </span>
           </h1>
@@ -210,21 +203,14 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               opacity: 0,
               maxWidth: "420px",
               lineHeight: 1.7,
+              color: "var(--color-text-muted)",
             }}
           >
-            Realizzo siti web e e-commerce WordPress su misura per PMI, startup e agenzie.<br></br>
+            Realizzo siti web e e-commerce WordPress su misura per PMI, startup e agenzie.<br />
             Qualità, performance e attenzione al dettaglio.
           </p>
 
-          <div
-            ref={ctaRef}
-            style={{
-              opacity: 0,
-              display: "flex",
-              gap: "2rem",
-              alignItems: "center",
-            }}
-          >
+          <div ref={ctaRef} style={{ opacity: 0, display: "flex", gap: "2rem", alignItems: "center" }}>
             <Link
               href="/progetti"
               style={{
@@ -246,9 +232,12 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
                 fontSize: "0.85rem",
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
-                opacity: 0.6,
+                color: "var(--color-text-muted)",
                 whiteSpace: "nowrap",
+                transition: "color 0.3s ease",
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
             >
               Contattami
             </Link>
@@ -307,7 +296,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               fontSize: "0.75rem",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
-              opacity: 0.5,
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
             }}
           >
@@ -319,11 +308,11 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               fontSize: "0.75rem",
               letterSpacing: "0.15em",
               textTransform: "uppercase",
-              opacity: 0.5,
-              transition: "opacity 0.3s ease",
+              color: "var(--color-text-muted)",
+              transition: "color 0.3s ease",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
           >
             Chi sono →
           </Link>
@@ -352,7 +341,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               <span
                 style={{
                   fontSize: "0.7rem",
-                  opacity: 0.5,
+                  color: "var(--color-text-muted)",
                   letterSpacing: "0.15em",
                   fontFamily: "var(--font-body)",
                 }}
@@ -371,7 +360,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               <p
                 style={{
                   fontSize: "0.9rem",
-                  opacity: 0.75,
+                  color: "var(--color-text-muted)",
                   lineHeight: 1.7,
                   flex: 1,
                 }}
@@ -383,7 +372,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
                   fontSize: "0.7rem",
                   letterSpacing: "0.12em",
                   textTransform: "uppercase",
-                  opacity: 0.5,
+                  color: "var(--color-text-muted)",
                   fontFamily: "var(--font-body)",
                 }}
               >
@@ -410,7 +399,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
                 fontSize: "0.75rem",
                 letterSpacing: "0.2em",
                 textTransform: "uppercase",
-                opacity: 0.5,
+                color: "var(--color-text-muted)",
                 fontFamily: "var(--font-body)",
               }}
             >
@@ -422,11 +411,11 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
                 fontSize: "0.75rem",
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
-                opacity: 0.5,
-                transition: "opacity 0.3s ease",
+                color: "var(--color-text-muted)",
+                transition: "color 0.3s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
             >
               Tutti i progetti →
             </Link>
@@ -452,7 +441,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
                 <span
                   style={{
                     fontSize: "0.75rem",
-                    opacity: 0.5,
+                    color: "var(--color-text-muted)",
                     letterSpacing: "0.1em",
                     fontFamily: "var(--font-body)",
                   }}
@@ -474,7 +463,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
                   <span
                     style={{
                       fontSize: "0.8rem",
-                      opacity: 0.55,
+                      color: "var(--color-text-muted)",
                       letterSpacing: "0.08em",
                       textTransform: "uppercase",
                     }}
@@ -487,7 +476,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
                   style={{
                     fontSize: "0.8rem",
                     letterSpacing: "0.1em",
-                    opacity: 0.5,
+                    color: "var(--color-text-muted)",
                     fontFamily: "var(--font-body)",
                   }}
                 >
@@ -513,7 +502,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               fontSize: "0.75rem",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
-              opacity: 0.5,
+              color: "var(--color-text-muted)",
               marginBottom: "2rem",
               fontFamily: "var(--font-body)",
             }}
