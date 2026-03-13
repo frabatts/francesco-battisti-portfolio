@@ -233,8 +233,8 @@ export default function AboutClient() {
               fontWeight: 300,
             }}
           >
-            Ho sempre voluto creare esperienze web speciali e uniche. Il mio avvicinamento allo sviluppo web ha cambiato molte cose per me e da allora cerco di spingere il mio lavoro verso nuovi orizzonti con ogni progetto, mettendo sempre al primo posto la qualità e le prestazioni.
-          </p>
+Ho sempre voluto creare esperienze web speciali e uniche. Il mio avvicinamento allo sviluppo web ha cambiato molte cose e da allora cerco di spingere ogni progetto verso nuovi orizzonti, mettendo sempre al primo posto qualità e prestazioni.
+Nel corso degli anni ho collaborato — e collaboro tuttora — con diverse agenzie e SEO manager, un'esperienza che mi ha permesso di sviluppare un approccio al web development attento non solo alla qualità tecnica, ma anche alle dinamiche di posizionamento organico e crescita digitale.          </p>
           <p
             style={{
               fontSize: "0.95rem",
@@ -243,8 +243,7 @@ export default function AboutClient() {
               fontWeight: 300,
             }}
           >
-            Lavoro a stretto contatto con i clienti per trasformare la loro visione in un progetto concreto — dal mockup Figma allo sviluppo del tema WordPress personalizzato, fino al deploy finale. Creo siti web e e-commerce ad alte prestazioni, completamente ottimizzati per SEO e strategie di crescita digitale.
-          </p>
+Lavoro a stretto contatto con i clienti per trasformare la loro visione in un progetto concreto — dal mockup Figma allo sviluppo del tema WordPress personalizzato, fino al deploy finale. Realizzo siti web e e-commerce ad alte prestazioni, completamente ottimizzati per SEO e pensati per supportare la crescita digitale del business.          </p>
         </div>
       </section>
 
