@@ -57,21 +57,11 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
 
     gsap.timeline()
       .set(overlay, { display: "flex", opacity: 0 })
-      .to(overlay, {
-        opacity: 1,
-        duration: 0.5,
-        ease: "power2.out",
-      })
+      .to(overlay, { opacity: 1, duration: 0.5, ease: "power2.out" })
       .fromTo(
         links,
         { opacity: 0, y: 24 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.5,
-          ease: "power3.out",
-          stagger: 0.07,
-        },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.07 },
         "-=0.2"
       );
   };
@@ -87,18 +77,8 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
         gsap.set(overlay, { display: "none" });
       },
     })
-      .to(links || [], {
-        opacity: 0,
-        y: -16,
-        duration: 0.25,
-        ease: "power2.in",
-        stagger: 0.04,
-      })
-      .to(overlay, {
-        opacity: 0,
-        duration: 0.4,
-        ease: "power2.in",
-      }, "-=0.1");
+      .to(links || [], { opacity: 0, y: -16, duration: 0.25, ease: "power2.in", stagger: 0.04 })
+      .to(overlay, { opacity: 0, duration: 0.4, ease: "power2.in" }, "-=0.1");
   };
 
   const normalizeUrl = (url: string) => {
@@ -120,22 +100,23 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
           left: 0,
           right: 0,
           zIndex: 100,
-          padding: "1.5rem 2rem",
+          padding: isMobile ? "1.5rem 1.25rem" : "1.5rem 2rem",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           opacity: 0,
         }}
       >
-        {/* Logo */}
+        {/* Logo — mix-blend-mode: difference */}
         <Link
           href="/"
           style={{
             fontFamily: "var(--font-display)",
             fontSize: "1.6rem",
             letterSpacing: "0.05em",
-            color: isOpen ? "var(--color-bg)" : "var(--color-fg)",
-            transition: "color 0.3s ease",
+            color: "#ffffff",
+            mixBlendMode: "difference",
+            transition: "opacity 0.3s ease",
             zIndex: 110,
             position: "relative",
           }}
@@ -211,7 +192,7 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
                   fontSize: "0.7rem",
                   letterSpacing: "0.15em",
                   textTransform: "uppercase",
-                  color: "var(--color-bg)",
+                  color: "var(--color-fg)",
                   transition: "color 0.3s ease",
                 }}
               >
@@ -227,7 +208,7 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
         )}
       </header>
 
-      {/* Overlay menu mobile fullscreen */}
+      {/* Overlay menu mobile fullscreen — sfondo scuro */}
       <div
         ref={overlayRef}
         style={{
@@ -235,10 +216,10 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
           position: "fixed",
           inset: 0,
           zIndex: 90,
-          backgroundColor: "var(--color-fg)",
+          backgroundColor: "var(--color-bg)",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: "8rem 2rem 4rem",
+          padding: "8rem 1.25rem 4rem",
           opacity: 0,
         }}
       >
@@ -263,7 +244,7 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
                     fontFamily: "var(--font-display)",
                     fontSize: "clamp(3rem, 12vw, 7rem)",
                     lineHeight: 1,
-                    color: isActive ? "#8B6914" : "var(--color-bg)",
+                    color: isActive ? "var(--color-accent)" : "var(--color-fg)",
                     display: "block",
                     letterSpacing: "0.02em",
                   }}
@@ -280,7 +261,7 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
           style={{
             marginTop: "4rem",
             paddingTop: "2rem",
-            borderTop: "1px solid rgba(0,0,0,0.15)",
+            borderTop: "1px solid var(--color-border)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
@@ -291,7 +272,7 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
               fontSize: "0.65rem",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
-              color: "rgba(0,0,0,0.4)",
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
             }}
           >
@@ -305,9 +286,12 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
               fontSize: "0.65rem",
               letterSpacing: "0.2em",
               textTransform: "uppercase",
-              color: "rgba(0,0,0,0.4)",
+              color: "var(--color-text-muted)",
               fontFamily: "var(--font-body)",
+              transition: "color 0.3s ease",
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
           >
             LinkedIn →
           </a>

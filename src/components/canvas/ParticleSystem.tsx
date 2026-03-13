@@ -6,7 +6,6 @@ import { useTransition } from "@/context/TransitionContext";
 
 const PARTICLE_COUNT = 1000;
 const COLOR_DEFAULT = new THREE.Color("#ffffff");
-const COLOR_ACCENT = new THREE.Color("#e8d5b0");
 const COLOR_GLOW = new THREE.Color("#ffffff");
 const REPULSE_RADIUS = 4;
 
@@ -48,9 +47,11 @@ export default function ParticleSystem({ mouseRef }: Props) {
       radii.current[i] = Math.sqrt(x * x + y * y);
       depthSpeeds.current[i] = 0.5 + Math.random() * 1.5;
 
-      colors[i * 3] = COLOR_DEFAULT.r;
-      colors[i * 3 + 1] = COLOR_DEFAULT.g;
-      colors[i * 3 + 2] = COLOR_DEFAULT.b;
+      // Sempre bianche con leggera variazione di opacità per sembrare offuscate
+      const brightness = 0.6 + Math.random() * 0.4;
+      colors[i * 3] = COLOR_DEFAULT.r * brightness;
+      colors[i * 3 + 1] = COLOR_DEFAULT.g * brightness;
+      colors[i * 3 + 2] = COLOR_DEFAULT.b * brightness;
     }
 
     return { positions, speeds, originalPositions, colors };
@@ -80,7 +81,6 @@ export default function ParticleSystem({ mouseRef }: Props) {
       for (let j = 0; j < PARTICLE_COUNT * 3; j++) {
         snapshotPositions.current[j] = pos[j];
       }
-      // Inizializza angoli e raggi dalla posizione snapshot
       for (let i = 0; i < PARTICLE_COUNT; i++) {
         const ix = i * 3;
         const iy = i * 3 + 1;
@@ -90,7 +90,6 @@ export default function ParticleSystem({ mouseRef }: Props) {
       snapshotTaken.current = true;
     }
 
-    // Reset snapshot quando vortice finisce
     if (!isVortex && snapshotTaken.current) {
       snapshotTaken.current = false;
     }
@@ -101,7 +100,7 @@ export default function ParticleSystem({ mouseRef }: Props) {
       const iz = i * 3 + 2;
 
       if (isVortex) {
-        // ── VORTICE — addensamento dalla posizione snapshot ──
+        // ── VORTICE ──
         const angularSpeed = 0.018 + intensity * 0.018 * depthSpeeds.current[i];
         angles.current[i] += angularSpeed;
 
@@ -122,11 +121,10 @@ export default function ParticleSystem({ mouseRef }: Props) {
           0.01
         );
 
-        // Glow bianco progressivo
-        const glowT = intensity;
-        col[ix] = THREE.MathUtils.lerp(col[ix], COLOR_GLOW.r, glowT * 0.1);
-        col[iy] = THREE.MathUtils.lerp(col[iy], COLOR_GLOW.g, glowT * 0.1);
-        col[iz] = THREE.MathUtils.lerp(col[iz], COLOR_GLOW.b, glowT * 0.1);
+        // Glow bianco durante vortice
+        col[ix] = THREE.MathUtils.lerp(col[ix], COLOR_GLOW.r, intensity * 0.1);
+        col[iy] = THREE.MathUtils.lerp(col[iy], COLOR_GLOW.g, intensity * 0.1);
+        col[iz] = THREE.MathUtils.lerp(col[iz], COLOR_GLOW.b, intensity * 0.1);
 
       } else {
         // ── STATO NORMALE ──
@@ -137,24 +135,23 @@ export default function ParticleSystem({ mouseRef }: Props) {
         pos[ix] = originalPositions[ix] + Math.sin(time * 0.3 + i * 0.1) * waveAmp;
         pos[iz] = originalPositions[iz] + Math.cos(time * 0.2 + i * 0.05) * waveAmp;
 
-        // Effetto mouse
+        // Repulsione mouse — rimane bianca, solo leggero glow
         const dx = pos[ix] - mouseX;
         const dy = pos[iy] - mouseY;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < REPULSE_RADIUS && dist > 0) {
           const force = (REPULSE_RADIUS - dist) / REPULSE_RADIUS;
-          const t = 1 - dist / REPULSE_RADIUS;
           pos[ix] += (dx / dist) * force * 0.2;
           pos[iy] += (dy / dist) * force * 0.2;
-          col[ix] = THREE.MathUtils.lerp(col[ix], COLOR_ACCENT.r, t * 0.15);
-          col[iy] = THREE.MathUtils.lerp(col[iy], COLOR_ACCENT.g, t * 0.15);
-          col[iz] = THREE.MathUtils.lerp(col[iz], COLOR_ACCENT.b, t * 0.15);
-        } else {
-          col[ix] = THREE.MathUtils.lerp(col[ix], COLOR_DEFAULT.r, 0.03);
-          col[iy] = THREE.MathUtils.lerp(col[iy], COLOR_DEFAULT.g, 0.03);
-          col[iz] = THREE.MathUtils.lerp(col[iz], COLOR_DEFAULT.b, 0.03);
+          // Nessun cambio colore — rimane sempre bianca
         }
+
+        // Torna sempre al bianco offuscato
+        const brightness = 0.6 + (i % 10) / 10 * 0.4;
+        col[ix] = THREE.MathUtils.lerp(col[ix], COLOR_DEFAULT.r * brightness, 0.03);
+        col[iy] = THREE.MathUtils.lerp(col[iy], COLOR_DEFAULT.g * brightness, 0.03);
+        col[iz] = THREE.MathUtils.lerp(col[iz], COLOR_DEFAULT.b * brightness, 0.03);
       }
     }
 

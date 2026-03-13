@@ -39,7 +39,7 @@ const SERVIZI = [
   {
     numero: "03",
     titolo: "Manutenzione",
-    descrizione: "Aggiornamenti, backup giornalieri, sicurezza e supporto continuativo. Ci penso io.",
+    descrizione: "Aggiornamenti, backup giornalieri, sicurezza e supporto continuativo.",
     tag: "Backup · Sicurezza · Supporto",
   },
 ];
@@ -54,7 +54,6 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
   const marqueeRef = useRef<HTMLDivElement>(null);
 
   const serviziRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.12 });
-  const progettiRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.1 });
   const ctaSezioneRef = useReveal<HTMLDivElement>({ direction: "fade", delay: 0.2 });
 
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
@@ -212,8 +211,18 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               color: "var(--color-text-muted)",
             }}
           >
-            Realizzo siti web e e-commerce WordPress su misura per PMI, startup e agenzie.{" "}
-            Qualità, performance e attenzione al dettaglio.
+            {isMobile ? (
+              <>
+                Realizzo siti web e e-commerce WordPress su misura per PMI, startup e agenzie.
+                <br />
+                Qualità, performance e attenzione al dettaglio.
+              </>
+            ) : (
+              <>
+                Realizzo siti web e e-commerce WordPress su misura per PMI, startup e agenzie.{" "}
+                Qualità, performance e attenzione al dettaglio.
+              </>
+            )}
           </p>
 
           <div
