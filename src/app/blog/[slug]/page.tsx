@@ -51,9 +51,7 @@ export async function generateMetadata({
   return {
     title: seo?.title || data.post.title,
     description: seo?.description,
-    alternates: {
-      canonical: seo?.canonicalUrl,
-    },
+    alternates: { canonical: seo?.canonicalUrl },
     openGraph: {
       title: seo?.openGraph?.title || data.post.title,
       description: seo?.openGraph?.description,
@@ -76,6 +74,7 @@ export default async function BlogPostPage({
     <PageTemplate
       title={data.post.title}
       content={data.post.content}
+      date={data.post.date}
     />
   );
 }

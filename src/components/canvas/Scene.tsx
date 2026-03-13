@@ -14,8 +14,6 @@ export default function Scene() {
     };
     window.addEventListener("mousemove", handleMouseMove);
 
-    // Forza pointer-events: none su tutti gli elementi canvas nel DOM
-    // necessario per iOS che ignora lo style React
     const forceNoPointerEvents = () => {
       const canvases = document.querySelectorAll("canvas");
       canvases.forEach((c) => {
@@ -23,8 +21,6 @@ export default function Scene() {
         c.style.touchAction = "none";
       });
     };
-
-    // Esegui subito e dopo un breve delay per sicurezza
     forceNoPointerEvents();
     const t = setTimeout(forceNoPointerEvents, 500);
 
@@ -57,11 +53,6 @@ export default function Scene() {
           touchAction: "none",
         }}
         gl={{ alpha: true }}
-        events={() => ({
-          // Disabilita completamente il sistema eventi di R3F
-          connect: () => {},
-          disconnect: () => {},
-        })}
       >
         <Suspense fallback={null}>
           <ParticleSystem mouseRef={mouseRef} />

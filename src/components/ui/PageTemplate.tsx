@@ -1,88 +1,90 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap, ScrollTrigger } from "@/lib/gsap/config";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { gsap } from "@/lib/gsap/config";
 
 interface PageTemplateProps {
   title: string;
   content: string;
+  date?: string;
 }
 
-export default function PageTemplate({ title, content }: PageTemplateProps) {
+export default function PageTemplate({ title, content, date }: PageTemplateProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Entrata titolo
       gsap.fromTo(
         titleRef.current,
         { yPercent: 100, opacity: 0 },
         { yPercent: 0, opacity: 1, duration: 1, ease: "power3.out", delay: 0.2 }
       );
-
-      // Linea
       gsap.fromTo(
         lineRef.current,
         { scaleX: 0 },
         { scaleX: 1, duration: 1.2, ease: "power3.inOut", delay: 0.1, transformOrigin: "left" }
       );
 
-      // Contenuto con ScrollTrigger
+      // Su mobile mostra contenuto subito
+      const isMobileNow = window.matchMedia("(max-width: 768px)").matches;
       if (contentRef.current) {
-        const paragraphs = contentRef.current.querySelectorAll("p, h2, h3, ul, ol");
-
-        paragraphs.forEach((el) => {
+        if (isMobileNow) {
+          gsap.set(contentRef.current, { opacity: 1, y: 0 });
+        } else {
           gsap.fromTo(
-            el,
+            contentRef.current,
             { opacity: 0, y: 30 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.8,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: el,
-                start: "top 85%",
-              },
-            }
+            { opacity: 1, y: 0, duration: 0.8, ease: "power2.out", delay: 0.4 }
           );
-        });
+        }
       }
     });
-
     return () => ctx.revert();
   }, []);
 
   return (
     <main>
-      {/* Page Hero */}
+      {/* ── HERO ── */}
       <section
         style={{
-          minHeight: "60vh",
+          minHeight: isMobile ? "50vh" : "60vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: "0 2rem 4rem",
+          padding: isMobile ? "7rem 1.25rem 2.5rem" : "0 2rem 4rem",
           borderBottom: "1px solid var(--color-border)",
         }}
       >
-        {/* Label */}
-        <div
+        <Link
+          href="/blog"
           style={{
             fontSize: "0.7rem",
-            letterSpacing: "0.2em",
+            letterSpacing: "0.15em",
             textTransform: "uppercase",
-            opacity: 0.4,
-            marginBottom: "2rem",
+            color: "var(--color-text-muted)",
             fontFamily: "var(--font-body)",
+            marginBottom: "2rem",
+            display: "inline-block",
+            transition: "color 0.3s ease",
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
         >
-          Page
-        </div>
+          ← Blog
+        </Link>
 
-        {/* Line */}
         <div
           ref={lineRef}
           style={{
@@ -93,39 +95,130 @@ export default function PageTemplate({ title, content }: PageTemplateProps) {
           }}
         />
 
-        {/* Title */}
         <div style={{ overflow: "hidden" }}>
           <h1
             ref={titleRef}
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(3rem, 10vw, 10rem)",
-              lineHeight: 0.9,
+              fontSize: isMobile ? "clamp(2rem, 10vw, 5rem)" : "clamp(3rem, 8vw, 8rem)",
+              lineHeight: 0.95,
               opacity: 0,
             }}
           >
             {title}
           </h1>
         </div>
+
+        {date && (
+          <p
+            style={{
+              fontSize: "0.7rem",
+              letterSpacing: "0.15em",
+              textTransform: "uppercase",
+              color: "var(--color-text-muted)",
+              fontFamily: "var(--font-body)",
+              marginTop: "1.5rem",
+            }}
+          >
+            {new Date(date).toLocaleDateString("it-IT", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </p>
+        )}
       </section>
 
-      {/* Content */}
+      {/* ── CONTENUTO ── */}
       <section
         style={{
-          padding: "6rem 2rem",
-          maxWidth: "800px",
+          padding: isMobile ? "3rem 1.25rem 5rem" : "6rem 2rem 8rem",
+          maxWidth: "760px",
         }}
       >
         <div
           ref={contentRef}
+          className="blog-content"
           style={{
-            fontSize: "1rem",
-            lineHeight: 1.8,
-            opacity: 0.8,
+            fontSize: isMobile ? "0.95rem" : "1rem",
+            lineHeight: 1.85,
+            color: "var(--color-text-muted)",
+            opacity: 0,
           }}
           dangerouslySetInnerHTML={{ __html: content }}
         />
       </section>
+
+      {/* ── CSS contenuto blog ── */}
+      <style>{`
+        .blog-content h2 {
+          font-family: var(--font-display);
+          font-size: clamp(1.5rem, 4vw, 2.5rem);
+          color: var(--color-fg);
+          margin: 3rem 0 1rem;
+          line-height: 1;
+        }
+        .blog-content h3 {
+          font-family: var(--font-display);
+          font-size: clamp(1.2rem, 3vw, 1.8rem);
+          color: var(--color-fg);
+          margin: 2rem 0 0.75rem;
+          line-height: 1;
+        }
+        .blog-content p {
+          margin-bottom: 1.5rem;
+          color: var(--color-text-muted);
+        }
+        .blog-content a {
+          color: var(--color-accent);
+          border-bottom: 1px solid var(--color-accent);
+          padding-bottom: 0.1rem;
+          transition: opacity 0.3s ease;
+        }
+        .blog-content a:hover {
+          opacity: 0.7;
+        }
+        .blog-content ul, .blog-content ol {
+          padding-left: 1.5rem;
+          margin-bottom: 1.5rem;
+          color: var(--color-text-muted);
+        }
+        .blog-content li {
+          margin-bottom: 0.5rem;
+          line-height: 1.7;
+        }
+        .blog-content blockquote {
+          border-left: 2px solid var(--color-accent);
+          padding-left: 1.5rem;
+          margin: 2rem 0;
+          font-style: italic;
+          color: var(--color-text-muted);
+        }
+        .blog-content code {
+          font-family: monospace;
+          font-size: 0.85rem;
+          background: var(--color-muted);
+          padding: 0.2rem 0.4rem;
+          border-radius: 2px;
+          color: var(--color-accent);
+        }
+        .blog-content pre {
+          background: var(--color-muted);
+          padding: 1.5rem;
+          border-radius: 4px;
+          overflow-x: auto;
+          margin-bottom: 1.5rem;
+        }
+        .blog-content img {
+          width: 100%;
+          height: auto;
+          margin: 2rem 0;
+        }
+        .blog-content strong {
+          color: var(--color-fg);
+          font-weight: 500;
+        }
+      `}</style>
     </main>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { gsap, ScrollTrigger } from "@/lib/gsap/config";
+import { gsap } from "@/lib/gsap/config";
 
 interface Post {
   id: string;
@@ -21,34 +21,47 @@ interface Post {
 export default function BlogClient({ posts }: { posts: Post[] }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Titolo entrata
       gsap.fromTo(
         titleRef.current,
         { yPercent: 100, opacity: 0 },
         { yPercent: 0, opacity: 1, duration: 1, ease: "power3.out", delay: 0.2 }
       );
 
-      // Lista post con stagger
       if (listRef.current) {
         const items = listRef.current.querySelectorAll("li");
-        gsap.fromTo(
-          items,
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: "power2.out",
-            stagger: 0.08,
-            scrollTrigger: {
-              trigger: listRef.current,
-              start: "top 80%",
-            },
-          }
-        );
+        // Su mobile mostra subito senza ScrollTrigger
+        const isMobileNow = window.matchMedia("(max-width: 768px)").matches;
+        if (isMobileNow) {
+          gsap.set(items, { opacity: 1, y: 0 });
+        } else {
+          gsap.fromTo(
+            items,
+            { opacity: 0, y: 40 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.7,
+              ease: "power2.out",
+              stagger: 0.08,
+              scrollTrigger: {
+                trigger: listRef.current,
+                start: "top 80%",
+              },
+            }
+          );
+        }
       }
     });
 
@@ -57,14 +70,14 @@ export default function BlogClient({ posts }: { posts: Post[] }) {
 
   return (
     <main>
-      {/* Hero */}
+      {/* ── HERO ── */}
       <section
         style={{
-          minHeight: "50vh",
+          minHeight: isMobile ? "40vh" : "50vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: "0 2rem 4rem",
+          padding: isMobile ? "7rem 1.25rem 2.5rem" : "0 2rem 4rem",
           borderBottom: "1px solid var(--color-border)",
         }}
       >
@@ -73,7 +86,7 @@ export default function BlogClient({ posts }: { posts: Post[] }) {
             fontSize: "0.7rem",
             letterSpacing: "0.2em",
             textTransform: "uppercase",
-            opacity: 0.4,
+            color: "var(--color-text-muted)",
             marginBottom: "1rem",
             fontFamily: "var(--font-body)",
           }}
@@ -85,87 +98,94 @@ export default function BlogClient({ posts }: { posts: Post[] }) {
             ref={titleRef}
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "clamp(3rem, 10vw, 10rem)",
+              fontSize: "clamp(3rem, 14vw, 10rem)",
               lineHeight: 0.9,
               opacity: 0,
             }}
           >
-            Latest Work
+            Blog
           </h1>
         </div>
       </section>
 
-      {/* Post list */}
-      <section style={{ padding: "4rem 2rem" }}>
+      {/* ── LISTA POST ── */}
+      <section style={{ padding: isMobile ? "2rem 1.25rem" : "4rem 2rem" }}>
         {posts.length === 0 ? (
-          <p style={{ opacity: 0.4, fontSize: "0.9rem" }}>
+          <p style={{ color: "var(--color-text-muted)", fontSize: "0.9rem" }}>
             Nessun articolo trovato.
           </p>
         ) : (
           <ul ref={listRef} style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {posts.map((post, index) => (
+            {posts.map((post) => (
               <li
                 key={post.id}
-                style={{
-                  borderBottom: "1px solid var(--color-border)",
-                }}
+                style={{ borderBottom: "1px solid var(--color-border)" }}
               >
                 <Link
                   href={`/blog/${post.slug}`}
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "4rem 1fr auto",
+                    gridTemplateColumns: isMobile ? "1fr" : "1fr auto",
                     alignItems: "center",
-                    gap: "2rem",
-                    padding: "2rem 0",
-                    transition: "opacity 0.3s ease",
+                    gap: isMobile ? "0.4rem" : "2rem",
+                    padding: isMobile ? "1.5rem 0" : "2.5rem 0",
+                    transition: "color 0.3s ease",
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.6")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                  onMouseEnter={(e) => {
+                    const title = e.currentTarget.querySelector(".post-title") as HTMLElement;
+                    const excerpt = e.currentTarget.querySelector(".post-excerpt") as HTMLElement;
+                    const date = e.currentTarget.querySelector(".post-date") as HTMLElement;
+                    if (title) title.style.color = "var(--color-accent)";
+                    if (excerpt) excerpt.style.color = "var(--color-accent)";
+                    if (date) date.style.color = "var(--color-accent)";
+                  }}
+                  onMouseLeave={(e) => {
+                    const title = e.currentTarget.querySelector(".post-title") as HTMLElement;
+                    const excerpt = e.currentTarget.querySelector(".post-excerpt") as HTMLElement;
+                    const date = e.currentTarget.querySelector(".post-date") as HTMLElement;
+                    if (title) title.style.color = "var(--color-fg)";
+                    if (excerpt) excerpt.style.color = "var(--color-text-muted)";
+                    if (date) date.style.color = "var(--color-text-muted)";
+                  }}
                 >
-                  {/* Index */}
-                  <span
-                    style={{
-                      fontFamily: "var(--font-body)",
-                      fontSize: "0.7rem",
-                      opacity: 0.3,
-                      letterSpacing: "0.1em",
-                    }}
-                  >
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-
-                  {/* Title + excerpt */}
                   <div>
                     <span
+                      className="post-title"
                       style={{
                         fontFamily: "var(--font-display)",
-                        fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
+                        fontSize: isMobile ? "1.8rem" : "clamp(1.5rem, 3vw, 2.5rem)",
                         display: "block",
-                        marginBottom: "0.5rem",
+                        marginBottom: "0.4rem",
+                        color: "var(--color-fg)",
+                        transition: "color 0.3s ease",
                       }}
                     >
                       {post.title}
                     </span>
                     <span
+                      className="post-excerpt"
                       style={{
                         fontSize: "0.8rem",
-                        opacity: 0.4,
+                        color: "var(--color-text-muted)",
                         lineHeight: 1.5,
                         display: "block",
+                        transition: "color 0.3s ease",
                       }}
                       dangerouslySetInnerHTML={{ __html: post.excerpt }}
                     />
                   </div>
 
-                  {/* Date */}
                   <span
+                    className="post-date"
                     style={{
                       fontSize: "0.7rem",
                       letterSpacing: "0.1em",
-                      opacity: 0.3,
+                      color: "var(--color-text-muted)",
                       textTransform: "uppercase",
                       whiteSpace: "nowrap",
+                      fontFamily: "var(--font-body)",
+                      transition: "color 0.3s ease",
+                      marginTop: isMobile ? "0.5rem" : "0",
                     }}
                   >
                     {new Date(post.date).toLocaleDateString("it-IT", {
