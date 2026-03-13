@@ -25,7 +25,7 @@ interface Progetto {
 export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 768px)");
@@ -129,30 +129,47 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
                   gap: isMobile ? "0.5rem" : "2rem",
                   padding: isMobile ? "1.75rem 0" : "2.5rem 0",
                   borderBottom: "1px solid var(--color-border)",
-                  transition: "opacity 0.3s ease",
+                  transition: "color 0.3s ease",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.5")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                onMouseEnter={(e) => {
+                  const title = e.currentTarget.querySelector(".proj-title") as HTMLElement;
+                  const cat = e.currentTarget.querySelector(".proj-cat") as HTMLElement;
+                  const anno = e.currentTarget.querySelector(".proj-anno") as HTMLElement;
+                  if (title) title.style.color = "var(--color-accent)";
+                  if (cat) cat.style.color = "var(--color-accent)";
+                  if (anno) anno.style.color = "var(--color-accent)";
+                }}
+                onMouseLeave={(e) => {
+                  const title = e.currentTarget.querySelector(".proj-title") as HTMLElement;
+                  const cat = e.currentTarget.querySelector(".proj-cat") as HTMLElement;
+                  const anno = e.currentTarget.querySelector(".proj-anno") as HTMLElement;
+                  if (title) title.style.color = "var(--color-fg)";
+                  if (cat) cat.style.color = "var(--color-text-muted)";
+                  if (anno) anno.style.color = "var(--color-text-muted)";
+                }}
               >
-                {/* Info */}
                 <div>
                   <span
+                    className="proj-title"
                     style={{
                       fontFamily: "var(--font-display)",
                       fontSize: isMobile ? "1.8rem" : "clamp(1.5rem, 3vw, 2.5rem)",
                       display: "block",
                       marginBottom: "0.4rem",
                       color: "var(--color-fg)",
+                      transition: "color 0.3s ease",
                     }}
                   >
                     {progetto.title}
                   </span>
                   <span
+                    className="proj-cat"
                     style={{
                       fontSize: "0.75rem",
                       color: "var(--color-text-muted)",
                       letterSpacing: "0.08em",
                       textTransform: "uppercase",
+                      transition: "color 0.3s ease",
                     }}
                   >
                     {progetto.dettagliProgetto.categoria}
@@ -164,9 +181,9 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
                   </span>
                 </div>
 
-                {/* Anno — solo desktop */}
                 {!isMobile && (
                   <span
+                    className="proj-anno"
                     style={{
                       fontSize: "0.7rem",
                       letterSpacing: "0.1em",
@@ -174,6 +191,7 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
                       textTransform: "uppercase",
                       whiteSpace: "nowrap",
                       fontFamily: "var(--font-body)",
+                      transition: "color 0.3s ease",
                     }}
                   >
                     {progetto.dettagliProgetto.anno}

@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { gsap, ScrollTrigger } from "@/lib/gsap/config";
+import { gsap } from "@/lib/gsap/config";
 
 interface DettagliProgetto {
   categoria: string;
@@ -12,20 +11,18 @@ interface DettagliProgetto {
   urlProgetto: string;
 }
 
-interface FeaturedImage {
-  node: {
-    sourceUrl: string;
-    altText: string;
-  };
-}
-
 interface ProgettoDetailProps {
   progetto: {
     id: string;
     title: string;
     slug: string;
     content: string;
-    featuredImage?: FeaturedImage;
+    featuredImage?: {
+      node: {
+        sourceUrl: string;
+        altText: string;
+      };
+    };
     dettagliProgetto: DettagliProgetto;
   };
 }
@@ -34,9 +31,6 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const imageWrapRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -50,7 +44,6 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ delay: 0.2 });
-
       tl.fromTo(
         titleRef.current,
         { yPercent: 100, opacity: 0 },
@@ -63,34 +56,12 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           "-=0.4"
         )
         .fromTo(
-          imageWrapRef.current,
-          { opacity: 0, y: 40 },
-          { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" },
-          "-=0.3"
-        )
-        .fromTo(
           contentRef.current,
           { opacity: 0, y: 30 },
           { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
-          "-=0.4"
+          "-=0.3"
         );
-
-      // Parallax solo su desktop
-      const isMobileCheck = window.matchMedia("(max-width: 768px)").matches;
-      if (imageRef.current && !isMobileCheck) {
-        gsap.to(imageRef.current, {
-          yPercent: 15,
-          ease: "none",
-          scrollTrigger: {
-            trigger: imageWrapRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      }
     });
-
     return () => ctx.revert();
   }, []);
 
@@ -105,6 +76,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           justifyContent: "flex-end",
           padding: isMobile ? "7rem 1.25rem 2.5rem" : "0 2rem 4rem",
           position: "relative",
+          borderBottom: "1px solid var(--color-border)",
         }}
       >
         <Link
@@ -122,7 +94,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           onMouseEnter={(e) => (e.currentTarget.style.color = "var(--color-fg)")}
           onMouseLeave={(e) => (e.currentTarget.style.color = "var(--color-text-muted)")}
         >
-          &larr; Progetti
+          ← Progetti
         </Link>
 
         <div style={{ overflow: "hidden", marginBottom: isMobile ? "2rem" : "3rem" }}>
@@ -150,16 +122,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           }}
         >
           <div>
-            <span
-              style={{
-                fontSize: "0.6rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "var(--color-text-muted)",
-                display: "block",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-text-muted)", display: "block", marginBottom: "0.5rem" }}>
               Categoria
             </span>
             <span style={{ fontSize: "0.9rem" }}>
@@ -168,16 +131,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           </div>
 
           <div>
-            <span
-              style={{
-                fontSize: "0.6rem",
-                letterSpacing: "0.2em",
-                textTransform: "uppercase",
-                color: "var(--color-text-muted)",
-                display: "block",
-                marginBottom: "0.5rem",
-              }}
-            >
+            <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-text-muted)", display: "block", marginBottom: "0.5rem" }}>
               Anno
             </span>
             <span style={{ fontSize: "0.9rem" }}>
@@ -187,16 +141,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
 
           {progetto.dettagliProgetto.urlProgetto && (
             <div>
-              <span
-                style={{
-                  fontSize: "0.6rem",
-                  letterSpacing: "0.2em",
-                  textTransform: "uppercase",
-                  color: "var(--color-text-muted)",
-                  display: "block",
-                  marginBottom: "0.5rem",
-                }}
-              >
+              <span style={{ fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--color-text-muted)", display: "block", marginBottom: "0.5rem" }}>
                 Link
               </span>
               <a
@@ -217,56 +162,10 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
         </div>
       </section>
 
-      {/* ── IMMAGINE FULLWIDTH CON PARALLAX ── */}
-      {progetto.featuredImage && (
-        <div
-          ref={imageWrapRef}
-          style={{
-            width: "100%",
-            height: isMobile ? "45vh" : "70vh",
-            position: "relative",
-            overflow: "hidden",
-            opacity: 0,
-          }}
-        >
-          <div
-            ref={imageRef}
-            style={{
-              position: "absolute",
-              inset: isMobile ? "0" : "-15% 0",
-              width: "100%",
-              height: isMobile ? "100%" : "130%",
-            }}
-          >
-            <Image
-              src={progetto.featuredImage.node.sourceUrl}
-              alt={progetto.featuredImage.node.altText || progetto.title}
-              fill
-              style={{ objectFit: "cover" }}
-              priority
-            />
-          </div>
-
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: "30%",
-              background: "linear-gradient(to bottom, transparent, var(--color-bg))",
-              zIndex: 1,
-            }}
-          />
-        </div>
-      )}
-
       {/* ── CONTENUTO ── */}
       <section
         style={{
-          padding: progetto.featuredImage
-            ? isMobile ? "2rem 1.25rem 4rem" : "3rem 2rem 6rem"
-            : isMobile ? "3rem 1.25rem" : "6rem 2rem",
+          padding: isMobile ? "3rem 1.25rem 4rem" : "6rem 2rem",
           maxWidth: "800px",
         }}
       >
@@ -284,11 +183,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
         {progetto.content && (
           <div
             ref={contentRef}
-            style={{
-              fontSize: "1rem",
-              lineHeight: 1.8,
-              color: "var(--color-text-muted)",
-            }}
+            style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--color-text-muted)" }}
             dangerouslySetInnerHTML={{ __html: progetto.content }}
           />
         )}

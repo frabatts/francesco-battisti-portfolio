@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap/config";
 
@@ -20,6 +19,16 @@ export function useReveal<T extends HTMLElement>(options: RevealOptions = {}) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    // Su mobile mostra tutto subito senza animazione ScrollTrigger
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (isMobile) {
+      gsap.set(el, { opacity: 1, y: 0, x: 0 });
+      if (el.children.length > 0) {
+        gsap.set(el.children, { opacity: 1, y: 0, x: 0 });
+      }
+      return;
+    }
 
     const {
       direction = "up",
@@ -60,15 +69,14 @@ export function useReveal<T extends HTMLElement>(options: RevealOptions = {}) {
     }
 
     const ctx = gsap.context(() => {
-      // Se ha figli, anima i figli con stagger
       const targets = stagger > 0 ? el.children : el;
-
       gsap.fromTo(targets, fromVars, {
         ...toVars,
         stagger: stagger > 0 ? stagger : undefined,
         scrollTrigger: {
           trigger: el,
           start,
+          once: true,
         },
       });
     });
