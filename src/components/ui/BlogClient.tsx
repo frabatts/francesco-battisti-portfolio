@@ -91,7 +91,7 @@ export default function BlogClient({ posts }: { posts: Post[] }) {
             fontFamily: "var(--font-body)",
           }}
         >
-          Journal
+          Articoli
         </div>
         <div style={{ overflow: "hidden" }}>
           <h1
