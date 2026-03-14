@@ -154,6 +154,8 @@ export default function BlogClient({ posts }: { posts: Post[] }) {
                         color: "var(--color-text-muted)",
                         lineHeight: 1.5,
                         display: "block",
+                        marginTop: "0.4rem",
+                        maxWidth: "760px",
                         transition: "color 0.3s ease",
                       }}
                       dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.excerpt) }}
