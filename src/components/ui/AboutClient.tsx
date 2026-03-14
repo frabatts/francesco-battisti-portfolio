@@ -62,7 +62,7 @@ const STACK = [
   },
   {
     categoria: "AI & Vibe Coding",
-    tools: ["Claude AI", "Cursor"],
+    tools: ["Claude AI", "Claude Code"],
     wip: true,
     nota: "Integrazione AI nel workflow di sviluppo per prototipazione rapida e qualità elevata.",
   },
