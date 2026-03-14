@@ -129,7 +129,7 @@ export default function AboutClient() {
               marginBottom: "1.5rem",
             }}
           >
-            Chi sono
+            About
           </p>
           <h1
             style={{
@@ -226,7 +226,7 @@ export default function AboutClient() {
             }}
           >
 Ho sempre voluto creare esperienze web speciali e uniche. Il mio avvicinamento allo sviluppo web ha cambiato molte cose e da allora cerco di spingere ogni progetto verso nuovi orizzonti, mettendo sempre al primo posto qualità e prestazioni.
-Nel corso degli anni ho collaborato — e collaboro tuttora — con diverse agenzie e SEO manager, un'esperienza che mi ha permesso di sviluppare un approccio al web development attento non solo alla qualità tecnica, ma anche alle dinamiche di posizionamento organico e crescita digitale.          </p>
+Nel corso degli anni ho collaborato — e collaboro tuttora — con diverse agenzie, un'esperienza che mi ha permesso di sviluppare un approccio al web development attento non solo alla qualità tecnica, ma anche alle dinamiche di posizionamento organico e crescita digitale.          </p>
           <p
             style={{
               fontSize: "0.95rem",
