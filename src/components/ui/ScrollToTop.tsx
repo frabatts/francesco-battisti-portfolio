@@ -5,19 +5,37 @@ import { gsap } from "@/lib/gsap/config";
 
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false);
+  const [bottom, setBottom] = useState("2rem");
   const btnRef = useRef<HTMLButtonElement>(null);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const onScroll = () => {
+    const update = () => {
       const shouldShow = window.scrollY > 400;
-      setVisible((prev) => {
-        if (prev === shouldShow) return prev;
-        return shouldShow;
+      setVisible((prev) => (prev === shouldShow ? prev : shouldShow));
+
+      const footerRect = document.querySelector("footer")?.getBoundingClientRect();
+      if (footerRect && footerRect.top < window.innerHeight) {
+        setBottom(`${window.innerHeight - footerRect.top + 32}px`);
+      } else {
+        setBottom("2rem");
+      }
+    };
+
+    const onScroll = () => {
+      if (rafRef.current !== null) return;
+      rafRef.current = requestAnimationFrame(() => {
+        update();
+        rafRef.current = null;
       });
     };
 
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -52,7 +70,7 @@ export default function ScrollToTop() {
       aria-label="Torna su"
       style={{
         position: "fixed",
-        bottom: "2rem",
+        bottom,
         right: "2rem",
         width: "44px",
         height: "44px",
