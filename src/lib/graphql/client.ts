@@ -2,7 +2,8 @@ const WORDPRESS_API_URL = process.env.NEXT_PUBLIC_WORDPRESS_API_URL!;
 
 export async function fetchGraphQL<T>(
   query: string,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
+  revalidate = 60
 ): Promise<T> {
   const response = await fetch(WORDPRESS_API_URL, {
     method: "POST",
@@ -10,7 +11,7 @@ export async function fetchGraphQL<T>(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ query, variables }),
-    next: { revalidate: 60 },
+    next: { revalidate },
   });
 
   if (!response.ok) {

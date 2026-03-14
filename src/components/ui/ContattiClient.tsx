@@ -1,21 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useReveal } from "@/animations/useReveal";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function ContattiClient() {
   const heroRef = useReveal<HTMLDivElement>({ direction: "up", delay: 0.2 });
   const formRef = useReveal<HTMLDivElement>({ direction: "up", delay: 0.2 });
 
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const isMobile = useIsMobile();
 
   return (
     <main>

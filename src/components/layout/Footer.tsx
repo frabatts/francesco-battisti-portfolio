@@ -20,7 +20,7 @@ interface MenuData {
 }
 
 export default async function Footer() {
-const data = await fetchGraphQL<MenuData>(GET_PRIMARY_MENU);
+const data = await fetchGraphQL<MenuData>(GET_PRIMARY_MENU, undefined, 86400);
   const menus = data?.menus?.nodes ?? [];
   const primaryMenu = menus.find((m) =>
   m.name.toLowerCase().includes("primary") ||

@@ -3,26 +3,10 @@ import { GET_POST_BY_SLUG, GET_ALL_POSTS } from "@/lib/graphql/queries/posts";
 import PageTemplate from "@/components/ui/PageTemplate";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-
-interface SEO {
-  title: string;
-  description: string;
-  canonicalUrl: string;
-  openGraph: {
-    title: string;
-    description: string;
-  };
-}
+import type { PostFull } from "@/types/wordpress";
 
 interface PostData {
-  post: {
-    id: string;
-    title: string;
-    slug: string;
-    content: string;
-    date: string;
-    seo: SEO;
-  } | null;
+  post: PostFull | null;
 }
 
 interface AllPostsData {
@@ -32,7 +16,7 @@ interface AllPostsData {
 }
 
 export async function generateStaticParams() {
-  const data = await fetchGraphQL<AllPostsData>(GET_ALL_POSTS);
+  const data = await fetchGraphQL<AllPostsData>(GET_ALL_POSTS, undefined, 1800);
   return data?.posts?.nodes.map((p) => ({ slug: p.slug })) ?? [];
 }
 
@@ -42,7 +26,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const data = await fetchGraphQL<PostData>(GET_POST_BY_SLUG, { slug });
+  const data = await fetchGraphQL<PostData>(GET_POST_BY_SLUG, { slug }, 1800);
 
   if (!data?.post) return { title: "Post non trovato" };
 
@@ -66,7 +50,7 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const data = await fetchGraphQL<PostData>(GET_POST_BY_SLUG, { slug });
+  const data = await fetchGraphQL<PostData>(GET_POST_BY_SLUG, { slug }, 1800);
 
   if (!data?.post) notFound();
 

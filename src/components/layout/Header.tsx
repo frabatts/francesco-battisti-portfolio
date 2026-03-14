@@ -20,7 +20,7 @@ interface MenuData {
 }
 
 export default async function Header() {
-  const data = await fetchGraphQL<MenuData>(GET_PRIMARY_MENU);
+  const data = await fetchGraphQL<MenuData>(GET_PRIMARY_MENU, undefined, 86400);
   const menuItems = data?.menus?.nodes[0]?.menuItems?.nodes ?? [];
 
   return <HeaderInner menuItems={menuItems} />;

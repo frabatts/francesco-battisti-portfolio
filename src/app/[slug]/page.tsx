@@ -3,16 +3,7 @@ import { GET_PAGE_BY_SLUG, GET_ALL_PAGES } from "@/lib/graphql/queries/pages";
 import PageTemplate from "@/components/ui/PageTemplate";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-
-interface SEO {
-  title: string;
-  description: string;
-  canonicalUrl: string;
-  openGraph: {
-    title: string;
-    description: string;
-  };
-}
+import type { SEO } from "@/types/wordpress";
 
 interface PageData {
   page: {
@@ -31,7 +22,7 @@ interface AllPagesData {
 }
 
 export async function generateStaticParams() {
-  const data = await fetchGraphQL<AllPagesData>(GET_ALL_PAGES);
+  const data = await fetchGraphQL<AllPagesData>(GET_ALL_PAGES, undefined, 86400);
   return data?.pages?.nodes.map((page) => ({ slug: page.slug })) ?? [];
 }
 
@@ -41,7 +32,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const data = await fetchGraphQL<PageData>(GET_PAGE_BY_SLUG, { slug });
+  const data = await fetchGraphQL<PageData>(GET_PAGE_BY_SLUG, { slug }, 86400);
 
   if (!data?.page) return { title: "Pagina non trovata" };
 
@@ -67,7 +58,7 @@ export default async function DynamicPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const data = await fetchGraphQL<PageData>(GET_PAGE_BY_SLUG, { slug });
+  const data = await fetchGraphQL<PageData>(GET_PAGE_BY_SLUG, { slug }, 86400);
 
   if (!data?.page) notFound();
 

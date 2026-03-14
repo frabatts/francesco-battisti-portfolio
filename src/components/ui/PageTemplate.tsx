@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "@/lib/gsap/config";
+import DOMPurify from "isomorphic-dompurify";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface PageTemplateProps {
   title: string;
@@ -14,15 +16,7 @@ export default function PageTemplate({ title, content, date }: PageTemplateProps
   const titleRef = useRef<HTMLHeadingElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -38,9 +32,8 @@ export default function PageTemplate({ title, content, date }: PageTemplateProps
       );
 
       // Su mobile mostra contenuto subito
-      const isMobileNow = window.matchMedia("(max-width: 768px)").matches;
       if (contentRef.current) {
-        if (isMobileNow) {
+        if (isMobile) {
           gsap.set(contentRef.current, { opacity: 1, y: 0 });
         } else {
           gsap.fromTo(
@@ -145,7 +138,7 @@ export default function PageTemplate({ title, content, date }: PageTemplateProps
             color: "var(--color-text-muted)",
             opacity: 0,
           }}
-          dangerouslySetInnerHTML={{ __html: content }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
         />
       </section>
 

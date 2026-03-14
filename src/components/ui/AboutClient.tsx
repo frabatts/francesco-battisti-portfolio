@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useReveal } from "@/animations/useReveal";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 const PROCESSO = [
   { step: "01", label: "Brief" },
@@ -103,15 +103,7 @@ export default function AboutClient() {
   const esperienzRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.1 });
   const ctaRef = useReveal<HTMLDivElement>({ direction: "fade", delay: 0.2 });
 
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const isMobile = useIsMobile();
 
   return (
     <main>

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { normalizeUrl } from "@/lib/utils";
 
 interface MenuItem {
   id: string;
@@ -11,24 +12,7 @@ interface MenuItem {
 
 export default function FooterInner({ menuItems }: { menuItems: MenuItem[] }) {
   const year = new Date().getFullYear();
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-
-  const normalizeUrl = (url: string) => {
-    try {
-      const parsed = new URL(url);
-      return parsed.pathname;
-    } catch {
-      return url;
-    }
-  };
+  const isMobile = useIsMobile();
 
   return (
     <footer

@@ -1,45 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "@/lib/gsap/config";
+import DOMPurify from "isomorphic-dompurify";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import type { ProgettoFull } from "@/types/wordpress";
 
-interface DettagliProgetto {
-  categoria: string;
-  anno: number;
-  descrizioneBreve: string;
-  urlProgetto: string;
-}
-
-interface ProgettoDetailProps {
-  progetto: {
-    id: string;
-    title: string;
-    slug: string;
-    content: string;
-    featuredImage?: {
-      node: {
-        sourceUrl: string;
-        altText: string;
-      };
-    };
-    dettagliProgetto: DettagliProgetto;
-  };
-}
-
-export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
+export default function ProgettoDetail({ progetto }: { progetto: ProgettoFull }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -184,7 +156,7 @@ export default function ProgettoDetail({ progetto }: ProgettoDetailProps) {
           <div
             ref={contentRef}
             style={{ fontSize: "1rem", lineHeight: 1.8, color: "var(--color-text-muted)" }}
-            dangerouslySetInnerHTML={{ __html: progetto.content }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(progetto.content) }}
           />
         )}
       </section>

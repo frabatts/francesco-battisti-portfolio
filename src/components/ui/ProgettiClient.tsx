@@ -1,39 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap, ScrollTrigger } from "@/lib/gsap/config";
-
-interface Progetto {
-  id: string;
-  title: string;
-  slug: string;
-  featuredImage?: {
-    node: {
-      sourceUrl: string;
-      altText: string;
-    };
-  };
-  dettagliProgetto: {
-    categoria: string;
-    anno: number;
-    descrizioneBreve: string;
-    urlProgetto: string;
-  };
-}
+import { useIsMobile } from "@/hooks/useIsMobile";
+import type { Progetto } from "@/types/wordpress";
 
 export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const ctx = gsap.context(() => {

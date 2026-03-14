@@ -51,3 +51,63 @@ export interface WPMenuItem {
     nodes: WPMenuItem[];
   };
 }
+
+// ── Tipi usati nelle page e nei componenti client ──────────────────────────
+
+export interface SEO {
+  title: string;
+  description: string;
+  canonicalUrl: string;
+  openGraph: {
+    title: string;
+    description: string;
+  };
+}
+
+export interface DettagliProgetto {
+  categoria: string;
+  anno: number;
+  descrizioneBreve: string;
+  urlProgetto: string;
+}
+
+export interface Progetto {
+  id: string;
+  title: string;
+  slug: string;
+  featuredImage?: {
+    node: {
+      sourceUrl: string;
+      altText: string;
+    };
+  };
+  dettagliProgetto: DettagliProgetto;
+}
+
+export interface ProgettoFull extends Progetto {
+  content: string;
+  seo: SEO;
+}
+
+export interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  date: string;
+  featuredImage?: {
+    node: {
+      sourceUrl: string;
+      altText: string;
+    };
+  };
+}
+
+export interface PostFull {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  date: string;
+  seo: SEO;
+}

@@ -3,37 +3,10 @@ import { GET_PROGETTO_BY_SLUG, GET_ALL_PROGETTI } from "@/lib/graphql/queries/pr
 import { notFound } from "next/navigation";
 import ProgettoDetail from "@/components/ui/ProgettoDetail";
 import type { Metadata } from "next";
-
-interface SEO {
-  title: string;
-  description: string;
-  canonicalUrl: string;
-  openGraph: {
-    title: string;
-    description: string;
-  };
-}
+import type { ProgettoFull } from "@/types/wordpress";
 
 interface ProgettoData {
-  progetto: {
-    id: string;
-    title: string;
-    slug: string;
-    content: string;
-    featuredImage?: {
-      node: {
-        sourceUrl: string;
-        altText: string;
-      };
-    };
-    dettagliProgetto: {
-      categoria: string;
-      anno: number;
-      descrizioneBreve: string;
-      urlProgetto: string;
-    };
-    seo: SEO;
-  } | null;
+  progetto: ProgettoFull | null;
 }
 
 interface AllProgettiData {
@@ -43,7 +16,7 @@ interface AllProgettiData {
 }
 
 export async function generateStaticParams() {
-  const data = await fetchGraphQL<AllProgettiData>(GET_ALL_PROGETTI);
+  const data = await fetchGraphQL<AllProgettiData>(GET_ALL_PROGETTI, undefined, 3600);
   return data?.progetti?.nodes.map((p) => ({ slug: p.slug })) ?? [];
 }
 
@@ -53,7 +26,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const data = await fetchGraphQL<ProgettoData>(GET_PROGETTO_BY_SLUG, { slug });
+  const data = await fetchGraphQL<ProgettoData>(GET_PROGETTO_BY_SLUG, { slug }, 3600);
 
   if (!data?.progetto) return { title: "Progetto non trovato" };
 
@@ -82,7 +55,7 @@ export default async function ProgettoPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const data = await fetchGraphQL<ProgettoData>(GET_PROGETTO_BY_SLUG, { slug });
+  const data = await fetchGraphQL<ProgettoData>(GET_PROGETTO_BY_SLUG, { slug }, 3600);
 
   if (!data?.progetto) notFound();
 

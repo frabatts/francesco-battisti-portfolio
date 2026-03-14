@@ -1,35 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap } from "@/lib/gsap/config";
-
-interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  date: string;
-  featuredImage?: {
-    node: {
-      sourceUrl: string;
-      altText: string;
-    };
-  };
-}
+import DOMPurify from "isomorphic-dompurify";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import type { Post } from "@/types/wordpress";
 
 export default function BlogClient({ posts }: { posts: Post[] }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -42,8 +23,7 @@ export default function BlogClient({ posts }: { posts: Post[] }) {
       if (listRef.current) {
         const items = listRef.current.querySelectorAll("li");
         // Su mobile mostra subito senza ScrollTrigger
-        const isMobileNow = window.matchMedia("(max-width: 768px)").matches;
-        if (isMobileNow) {
+        if (isMobile) {
           gsap.set(items, { opacity: 1, y: 0 });
         } else {
           gsap.fromTo(
@@ -171,7 +151,7 @@ export default function BlogClient({ posts }: { posts: Post[] }) {
                         display: "block",
                         transition: "color 0.3s ease",
                       }}
-                      dangerouslySetInnerHTML={{ __html: post.excerpt }}
+                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.excerpt) }}
                     />
                   </div>
 

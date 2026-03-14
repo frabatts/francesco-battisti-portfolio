@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap/config";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { normalizeUrl } from "@/lib/utils";
 
 interface MenuItem {
   id: string;
@@ -16,15 +18,7 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
   const navLinksRef = useRef<HTMLUListElement>(null);
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Detect mobile
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
+  const isMobile = useIsMobile();
 
   // Entrata header
   useEffect(() => {
@@ -38,10 +32,25 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
     return () => ctx.revert();
   }, []);
 
+  const handleClose = useCallback(() => {
+    const overlay = overlayRef.current;
+    const links = navLinksRef.current?.querySelectorAll("li");
+    if (!overlay) return;
+
+    gsap.timeline({
+      onComplete: () => {
+        setIsOpen(false);
+        gsap.set(overlay, { display: "none" });
+      },
+    })
+      .to(links || [], { opacity: 0, y: -16, duration: 0.25, ease: "power2.in", stagger: 0.04 })
+      .to(overlay, { opacity: 0, duration: 0.4, ease: "power2.in" }, "-=0.1");
+  }, []);
+
   // Chiudi menu al cambio pagina
   useEffect(() => {
     if (isOpen) handleClose();
-  }, [pathname]);
+  }, [pathname, handleClose]);
 
   // Blocca scroll quando menu aperto
   useEffect(() => {
@@ -64,30 +73,6 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
         { opacity: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.07 },
         "-=0.2"
       );
-  };
-
-  const handleClose = () => {
-    const overlay = overlayRef.current;
-    const links = navLinksRef.current?.querySelectorAll("li");
-    if (!overlay) return;
-
-    gsap.timeline({
-      onComplete: () => {
-        setIsOpen(false);
-        gsap.set(overlay, { display: "none" });
-      },
-    })
-      .to(links || [], { opacity: 0, y: -16, duration: 0.25, ease: "power2.in", stagger: 0.04 })
-      .to(overlay, { opacity: 0, duration: 0.4, ease: "power2.in" }, "-=0.1");
-  };
-
-  const normalizeUrl = (url: string) => {
-    try {
-      const parsed = new URL(url);
-      return parsed.pathname;
-    } catch {
-      return url;
-    }
   };
 
   return (
@@ -184,6 +169,8 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
               alignItems: "flex-end",
             }}
             aria-label={isOpen ? "Chiudi menu" : "Apri menu"}
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
           >
             {isOpen ? (
               <span
@@ -210,6 +197,7 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
 
       {/* Overlay menu mobile fullscreen — sfondo scuro */}
       <div
+        id="mobile-menu"
         ref={overlayRef}
         style={{
           display: "none",

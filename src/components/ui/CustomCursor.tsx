@@ -39,53 +39,30 @@ export default function CustomCursor() {
       });
     };
 
-    // Hover su link e bottoni
-    const onMouseEnter = () => {
-      gsap.to(follower, {
-        scale: 2.5,
-        opacity: 0.15,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-      gsap.to(cursor, {
-        scale: 0,
-        duration: 0.2,
-      });
+    // Hover su link e bottoni — delegazione eventi sul document
+    const onMouseOver = (e: MouseEvent) => {
+      const target = (e.target as Element).closest("a, button");
+      if (!target) return;
+      gsap.to(follower, { scale: 2.5, opacity: 0.15, duration: 0.3, ease: "power2.out" });
+      gsap.to(cursor, { scale: 0, duration: 0.2 });
     };
 
-    const onMouseLeave = () => {
-      gsap.to(follower, {
-        scale: 1,
-        opacity: 0.5,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-      gsap.to(cursor, {
-        scale: 1,
-        duration: 0.2,
-      });
-    };
-
-    // Applica hover a tutti i link e bottoni
-    const addHoverListeners = () => {
-      const elements = document.querySelectorAll("a, button");
-      elements.forEach((el) => {
-        el.addEventListener("mouseenter", onMouseEnter);
-        el.addEventListener("mouseleave", onMouseLeave);
-      });
+    const onMouseOut = (e: MouseEvent) => {
+      const target = (e.target as Element).closest("a, button");
+      if (!target) return;
+      gsap.to(follower, { scale: 1, opacity: 0.5, duration: 0.3, ease: "power2.out" });
+      gsap.to(cursor, { scale: 1, duration: 0.2 });
     };
 
     window.addEventListener("mousemove", onMouseMove);
-    addHoverListeners();
-
-    // Observer per elementi aggiunti dinamicamente
-    const observer = new MutationObserver(addHoverListeners);
-    observer.observe(document.body, { childList: true, subtree: true });
+    document.addEventListener("mouseover", onMouseOver);
+    document.addEventListener("mouseout", onMouseOut);
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseover", onMouseOver);
+      document.removeEventListener("mouseout", onMouseOut);
       document.body.style.cursor = "auto";
-      observer.disconnect();
     };
   }, []);
 

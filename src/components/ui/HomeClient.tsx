@@ -1,27 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap, ScrollTrigger } from "@/lib/gsap/config";
 import { useReveal } from "@/animations/useReveal";
-
-interface Progetto {
-  id: string;
-  title: string;
-  slug: string;
-  featuredImage?: {
-    node: {
-      sourceUrl: string;
-      altText: string;
-    };
-  };
-  dettagliProgetto: {
-    categoria: string;
-    anno: number;
-    descrizioneBreve: string;
-    urlProgetto: string;
-  };
-}
+import { useIsMobile } from "@/hooks/useIsMobile";
+import type { Progetto } from "@/types/wordpress";
 
 const SERVIZI = [
   {
@@ -56,15 +40,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
   const serviziRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.12 });
   const ctaSezioneRef = useReveal<HTMLDivElement>({ direction: "fade", delay: 0.2 });
 
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)");
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -143,7 +119,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
             fontFamily: "var(--font-body)",
           }}
         >
-          © 2026
+          © {new Date().getFullYear()}
         </div>
 
         <div
