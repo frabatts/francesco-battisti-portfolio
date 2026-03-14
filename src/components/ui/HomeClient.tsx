@@ -320,6 +320,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
 
       {/* ── MARQUEE ── */}
       <section
+        data-theme="light"
         style={{
           padding: "2rem 0",
           borderTop: "1px solid var(--color-border)",

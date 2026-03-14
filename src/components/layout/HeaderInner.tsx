@@ -16,18 +16,37 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
   const headerRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const navLinksRef = useRef<HTMLUListElement>(null);
+  const logoOverlayRef = useRef<HTMLSpanElement>(null);
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
+  const [logoColor, setLogoColor] = useState<string>("var(--color-fg)");
 
   const activeLineRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const hoverLineRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  // Entrata header
+  // Logo adattivo: osserva sezioni con data-theme="light"
+  useEffect(() => {
+    const sections = document.querySelectorAll<HTMLElement>("[data-theme='light']");
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const anyVisible = entries.some((entry) => entry.intersectionRatio >= 0.5);
+        setLogoColor(anyVisible ? "var(--color-bg)" : "var(--color-fg)");
+      },
+      { threshold: [0, 0.5, 1] }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  // Entrata logo overlay (fuori dall'header per permettere mix-blend-mode)
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        headerRef.current,
+        logoOverlayRef.current,
         { opacity: 0, y: -20 },
         { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", delay: 0.2 }
       );
@@ -120,28 +139,23 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          opacity: 0,
         }}
       >
-        {/* Logo — hover GSAP scale */}
+        {/* Logo originale — invisibile, mantiene lo spazio e il click */}
         <Link
           href="/"
+          aria-label="Homepage"
           style={{
             fontFamily: "var(--font-display)",
             fontSize: "1.6rem",
             letterSpacing: "0.05em",
-            color: "#ffffff",
-            mixBlendMode: "difference",
+            color: logoColor,
             zIndex: 110,
             position: "relative",
             display: "inline-block",
+            opacity: 0,
+            pointerEvents: "all",
           }}
-          onMouseEnter={(e) =>
-            gsap.to(e.currentTarget, { scale: 1.05, duration: 0.3, ease: "power2.out" })
-          }
-          onMouseLeave={(e) =>
-            gsap.to(e.currentTarget, { scale: 1, duration: 0.3, ease: "power2.out" })
-          }
         >
           FB
         </Link>
@@ -280,6 +294,27 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
           </button>
         )}
       </header>
+
+      {/* Logo overlay — fixed, fuori dall'header per mix-blend-mode: difference */}
+      <span
+        ref={logoOverlayRef}
+        aria-hidden="true"
+        style={{
+          position: "fixed",
+          top: "1.5rem",
+          left: isMobile ? "1.25rem" : "2rem",
+          zIndex: 150,
+          fontFamily: "var(--font-display)",
+          fontSize: "1.6rem",
+          letterSpacing: "0.05em",
+          color: "#ffffff",
+          mixBlendMode: "difference",
+          pointerEvents: "none",
+          opacity: 0,
+        }}
+      >
+        FB
+      </span>
 
       {/* Overlay menu mobile fullscreen */}
       <div
