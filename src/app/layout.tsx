@@ -7,6 +7,7 @@ import SceneLoader from "@/components/canvas/SceneLoader";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CustomCursor from "@/components/ui/CustomCursor";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 import { TransitionProvider } from "@/context/TransitionContext";
 
 const bebasNeue = Bebas_Neue({
@@ -62,6 +63,7 @@ export default function RootLayout({
         <TransitionProvider>
           <LenisProvider>
             <CustomCursor />
+            <ScrollToTop />
             <SceneLoader />
             <div id="content">
               <Header />

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useReveal } from "@/animations/useReveal";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { useAnimatedBorder } from "@/animations/useAnimatedBorder";
 
 const PROCESSO = [
   { step: "01", label: "Brief" },
@@ -96,6 +97,7 @@ const ESPERIENZE = [
 ];
 
 export default function AboutClient() {
+  const heroBorderRef = useAnimatedBorder<HTMLDivElement>();
   const heroRef = useReveal<HTMLDivElement>({ direction: "up", delay: 0.2 });
   const bioRef = useReveal<HTMLDivElement>({ direction: "up", delay: 0.1 });
   const valoriRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.1 });
@@ -115,7 +117,6 @@ export default function AboutClient() {
           flexDirection: "column",
           justifyContent: "flex-end",
           padding: isMobile ? "7rem 1.25rem 2.5rem" : "12rem 2rem 4rem",
-          borderBottom: "1px solid var(--color-border)",
         }}
       >
         <div ref={heroRef}>
@@ -190,6 +191,10 @@ export default function AboutClient() {
             ))}
           </div>
         </div>
+        <div
+          ref={heroBorderRef}
+          style={{ height: "1px", backgroundColor: "var(--color-border)", marginTop: "2.5rem" }}
+        />
       </section>
 
       {/* ── BIO ── */}

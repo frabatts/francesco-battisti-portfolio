@@ -12,47 +12,71 @@ export default function CustomCursor() {
     const follower = followerRef.current;
     if (!cursor || !follower) return;
 
-    // Nascondi cursor nativo
     document.body.style.cursor = "none";
 
-    let mouseX = 0;
-    let mouseY = 0;
-
     const onMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-
-      // Cursor dot — segue immediatamente
-      gsap.to(cursor, {
-        x: mouseX,
-        y: mouseY,
-        duration: 0.1,
-        ease: "none",
-      });
-
-      // Follower — segue con ritardo
-      gsap.to(follower, {
-        x: mouseX,
-        y: mouseY,
-        duration: 0.6,
-        ease: "power2.out",
-      });
+      gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.1, ease: "none" });
+      gsap.to(follower, { x: e.clientX, y: e.clientY, duration: 0.6, ease: "power2.out" });
     };
 
-    // Hover su link e bottoni — delegazione eventi sul document
     const onMouseOver = (e: MouseEvent) => {
-      const target = (e.target as Element).closest("a, button");
-      if (!target) return;
+      const target = e.target as Element;
+      if (!target.closest("a, button")) return;
+
       gsap.to(follower, { scale: 2.5, opacity: 0.15, duration: 0.3, ease: "power2.out" });
       gsap.to(cursor, { scale: 0, duration: 0.2 });
     };
 
     const onMouseOut = (e: MouseEvent) => {
-      const target = (e.target as Element).closest("a, button");
-      if (!target) return;
+      const target = e.target as Element;
+      if (!target.closest("a, button")) return;
+
       gsap.to(follower, { scale: 1, opacity: 0.5, duration: 0.3, ease: "power2.out" });
       gsap.to(cursor, { scale: 1, duration: 0.2 });
     };
+
+    // Magnetic effect sui bottoni .cta-magnetic
+    const magneticEls: Element[] = [];
+
+    const setupMagnetic = () => {
+      const els = document.querySelectorAll(".cta-magnetic");
+      els.forEach((el) => {
+        if (magneticEls.includes(el)) return;
+        magneticEls.push(el);
+
+        const onMagneticMove = (ev: Event) => {
+          const me = ev as MouseEvent;
+          const rect = (el as HTMLElement).getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          const dx = me.clientX - cx;
+          const dy = me.clientY - cy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const maxDist = 80;
+
+          if (dist < maxDist) {
+            const strength = 1 - dist / maxDist;
+            gsap.to(el, {
+              x: dx * strength * 0.4,
+              y: dy * strength * 0.4,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          }
+        };
+
+        const onMagneticLeave = () => {
+          gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.3)" });
+        };
+
+        el.addEventListener("mousemove", onMagneticMove);
+        el.addEventListener("mouseleave", onMagneticLeave);
+      });
+    };
+
+    const observer = new MutationObserver(() => setupMagnetic());
+    observer.observe(document.body, { childList: true, subtree: true });
+    setupMagnetic();
 
     window.addEventListener("mousemove", onMouseMove);
     document.addEventListener("mouseover", onMouseOver);
@@ -63,6 +87,7 @@ export default function CustomCursor() {
       document.removeEventListener("mouseover", onMouseOver);
       document.removeEventListener("mouseout", onMouseOut);
       document.body.style.cursor = "auto";
+      observer.disconnect();
     };
   }, []);
 

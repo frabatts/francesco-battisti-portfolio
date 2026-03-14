@@ -176,11 +176,11 @@ export default function ContattiClient() {
       {/* ── HERO ── */}
       <section
         style={{
-          minHeight: isMobile ? "50vh" : "70vh",
+          minHeight: isMobile ? "50vh" : "60vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          padding: isMobile ? "7rem 1.25rem 2.5rem" : "0 2rem 4rem",
+          padding: isMobile ? "7rem 1.25rem 2.5rem" : "12rem 2rem 4rem",
           borderBottom: "1px solid var(--color-border)",
         }}
       >
@@ -514,6 +514,7 @@ export default function ContattiClient() {
                   <button
                     type="submit"
                     disabled={status === "loading"}
+                    className="cta-magnetic"
                     style={{
                       display: "inline-block",
                       width: isMobile ? "100%" : "auto",

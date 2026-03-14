@@ -20,6 +20,9 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
+  const activeLineRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const hoverLineRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
   // Entrata header
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -30,6 +33,34 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
       );
     });
     return () => ctx.revert();
+  }, []);
+
+  // Anima l'indicatore pagina attiva al mount e al cambio pathname
+  useEffect(() => {
+    menuItems.forEach((item) => {
+      const isActive = pathname === normalizeUrl(item.url);
+      const line = activeLineRefs.current.get(item.id);
+      if (!line) return;
+      if (isActive) {
+        gsap.fromTo(
+          line,
+          { scaleX: 0 },
+          { scaleX: 1, duration: 0.4, ease: "power3.out", transformOrigin: "left" }
+        );
+      }
+    });
+  }, [pathname, menuItems]);
+
+  const handleLinkEnter = useCallback((id: string) => {
+    const line = hoverLineRefs.current.get(id);
+    if (!line) return;
+    gsap.to(line, { scaleX: 1, duration: 0.3, ease: "power3.out", transformOrigin: "left" });
+  }, []);
+
+  const handleLinkLeave = useCallback((id: string) => {
+    const line = hoverLineRefs.current.get(id);
+    if (!line) return;
+    gsap.to(line, { scaleX: 0, duration: 0.25, ease: "power3.out", transformOrigin: "right" });
   }, []);
 
   const handleClose = useCallback(() => {
@@ -92,7 +123,7 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
           opacity: 0,
         }}
       >
-        {/* Logo — mix-blend-mode: difference */}
+        {/* Logo — hover GSAP scale */}
         <Link
           href="/"
           style={{
@@ -101,10 +132,16 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
             letterSpacing: "0.05em",
             color: "#ffffff",
             mixBlendMode: "difference",
-            transition: "opacity 0.3s ease",
             zIndex: 110,
             position: "relative",
+            display: "inline-block",
           }}
+          onMouseEnter={(e) =>
+            gsap.to(e.currentTarget, { scale: 1.05, duration: 0.3, ease: "power2.out" })
+          }
+          onMouseLeave={(e) =>
+            gsap.to(e.currentTarget, { scale: 1, duration: 0.3, ease: "power2.out" })
+          }
         >
           FB
         </Link>
@@ -135,15 +172,64 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
                         textTransform: "uppercase",
                         color: isActive ? "var(--color-accent)" : "var(--color-text-muted)",
                         transition: "color 0.3s ease",
+                        display: "inline-block",
+                        paddingBottom: "4px",
+                        position: "relative",
                       }}
                       onMouseEnter={(e) => {
-                        if (!isActive) e.currentTarget.style.color = "var(--color-fg)";
+                        if (!isActive) {
+                          e.currentTarget.style.color = "var(--color-fg)";
+                          handleLinkEnter(item.id);
+                        }
                       }}
                       onMouseLeave={(e) => {
-                        if (!isActive) e.currentTarget.style.color = "var(--color-text-muted)";
+                        if (!isActive) {
+                          e.currentTarget.style.color = "var(--color-text-muted)";
+                          handleLinkLeave(item.id);
+                        }
                       }}
                     >
                       {item.label}
+
+                      {/* Indicatore pagina attiva */}
+                      {isActive && (
+                        <div
+                          ref={(el) => {
+                            if (el) activeLineRefs.current.set(item.id, el);
+                            else activeLineRefs.current.delete(item.id);
+                          }}
+                          style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            height: "1px",
+                            backgroundColor: "var(--color-accent)",
+                            transform: "scaleX(0)",
+                            transformOrigin: "left",
+                          }}
+                        />
+                      )}
+
+                      {/* Hover underline */}
+                      {!isActive && (
+                        <div
+                          ref={(el) => {
+                            if (el) hoverLineRefs.current.set(item.id, el);
+                            else hoverLineRefs.current.delete(item.id);
+                          }}
+                          style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            height: "1px",
+                            backgroundColor: "var(--color-fg)",
+                            transform: "scaleX(0)",
+                            transformOrigin: "left",
+                          }}
+                        />
+                      )}
                     </Link>
                   </li>
                 );
@@ -195,7 +281,7 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
         )}
       </header>
 
-      {/* Overlay menu mobile fullscreen — sfondo scuro */}
+      {/* Overlay menu mobile fullscreen */}
       <div
         id="mobile-menu"
         ref={overlayRef}
@@ -244,7 +330,6 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
           })}
         </ul>
 
-        {/* Info fondo overlay */}
         <div
           style={{
             marginTop: "4rem",

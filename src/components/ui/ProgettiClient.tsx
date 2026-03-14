@@ -1,15 +1,30 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { gsap, ScrollTrigger } from "@/lib/gsap/config";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import type { Progetto } from "@/types/wordpress";
+import { useAnimatedBorder } from "@/animations/useAnimatedBorder";
 
 export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const heroBorderRef = useAnimatedBorder<HTMLDivElement>();
+  const hoverLineRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const isMobile = useIsMobile();
+
+  const handleRowEnter = useCallback((id: string) => {
+    const line = hoverLineRefs.current.get(id);
+    if (!line) return;
+    gsap.to(line, { scaleX: 1, duration: 0.4, ease: "power2.out", transformOrigin: "left" });
+  }, []);
+
+  const handleRowLeave = useCallback((id: string) => {
+    const line = hoverLineRefs.current.get(id);
+    if (!line) return;
+    gsap.to(line, { scaleX: 0, duration: 0.3, ease: "power2.out", transformOrigin: "right" });
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -52,7 +67,6 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
           flexDirection: "column",
           justifyContent: "flex-end",
           padding: isMobile ? "7rem 1.25rem 2.5rem" : "0 2rem 4rem",
-          borderBottom: "1px solid var(--color-border)",
         }}
       >
         <div
@@ -80,6 +94,10 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
             Progetti
           </h1>
         </div>
+        <div
+          ref={heroBorderRef}
+          style={{ height: "1px", backgroundColor: "var(--color-border)", marginTop: "2.5rem" }}
+        />
       </section>
 
       {/* Lista progetti */}
@@ -106,6 +124,7 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
                   padding: isMobile ? "1.75rem 0" : "2.5rem 0",
                   borderBottom: "1px solid var(--color-border)",
                   transition: "color 0.3s ease",
+                  position: "relative",
                 }}
                 onMouseEnter={(e) => {
                   const title = e.currentTarget.querySelector(".proj-title") as HTMLElement;
@@ -114,6 +133,7 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
                   if (title) title.style.color = "var(--color-accent)";
                   if (cat) cat.style.color = "var(--color-accent)";
                   if (anno) anno.style.color = "var(--color-accent)";
+                  handleRowEnter(progetto.id);
                 }}
                 onMouseLeave={(e) => {
                   const title = e.currentTarget.querySelector(".proj-title") as HTMLElement;
@@ -122,9 +142,28 @@ export default function ProgettiClient({ progetti }: { progetti: Progetto[] }) {
                   if (title) title.style.color = "var(--color-fg)";
                   if (cat) cat.style.color = "var(--color-text-muted)";
                   if (anno) anno.style.color = "var(--color-text-muted)";
+                  handleRowLeave(progetto.id);
                 }}
               >
                 <div>
+                  {/* Linea hover animata */}
+                  <div
+                    ref={(el) => {
+                      if (el) hoverLineRefs.current.set(progetto.id, el);
+                      else hoverLineRefs.current.delete(progetto.id);
+                    }}
+                    style={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: "1px",
+                      backgroundColor: "var(--color-accent)",
+                      transform: "scaleX(0)",
+                      transformOrigin: "left",
+                      pointerEvents: "none",
+                    }}
+                  />
                   <span
                     className="proj-title"
                     style={{

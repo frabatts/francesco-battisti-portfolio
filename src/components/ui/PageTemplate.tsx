@@ -5,6 +5,8 @@ import Link from "next/link";
 import { gsap } from "@/lib/gsap/config";
 import DOMPurify from "isomorphic-dompurify";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import ReadingProgress from "@/components/ui/ReadingProgress";
+import { useAnimatedBorder } from "@/animations/useAnimatedBorder";
 
 interface PageTemplateProps {
   title: string;
@@ -15,7 +17,7 @@ interface PageTemplateProps {
 export default function PageTemplate({ title, content, date }: PageTemplateProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const lineRef = useRef<HTMLDivElement>(null);
+  const lineRef = useAnimatedBorder<HTMLDivElement>();
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -24,11 +26,6 @@ export default function PageTemplate({ title, content, date }: PageTemplateProps
         titleRef.current,
         { yPercent: 100, opacity: 0 },
         { yPercent: 0, opacity: 1, duration: 1, ease: "power3.out", delay: 0.2 }
-      );
-      gsap.fromTo(
-        lineRef.current,
-        { scaleX: 0 },
-        { scaleX: 1, duration: 1.2, ease: "power3.inOut", delay: 0.1, transformOrigin: "left" }
       );
 
       // Su mobile mostra contenuto subito
@@ -49,6 +46,7 @@ export default function PageTemplate({ title, content, date }: PageTemplateProps
 
   return (
     <main>
+      <ReadingProgress />
       {/* ── HERO ── */}
       <section
         style={{

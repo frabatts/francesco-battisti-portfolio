@@ -6,10 +6,12 @@ import { gsap } from "@/lib/gsap/config";
 import DOMPurify from "isomorphic-dompurify";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import type { Post } from "@/types/wordpress";
+import { useAnimatedBorder } from "@/animations/useAnimatedBorder";
 
 export default function BlogClient({ posts }: { posts: Post[] }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const heroBorderRef = useAnimatedBorder<HTMLDivElement>();
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -58,7 +60,6 @@ export default function BlogClient({ posts }: { posts: Post[] }) {
           flexDirection: "column",
           justifyContent: "flex-end",
           padding: isMobile ? "7rem 1.25rem 2.5rem" : "0 2rem 4rem",
-          borderBottom: "1px solid var(--color-border)",
         }}
       >
         <div
@@ -86,6 +87,10 @@ export default function BlogClient({ posts }: { posts: Post[] }) {
             Blog
           </h1>
         </div>
+        <div
+          ref={heroBorderRef}
+          style={{ height: "1px", backgroundColor: "var(--color-border)", marginTop: "2.5rem" }}
+        />
       </section>
 
       {/* ── LISTA POST ── */}

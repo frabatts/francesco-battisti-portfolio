@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { gsap, ScrollTrigger } from "@/lib/gsap/config";
 import { useReveal } from "@/animations/useReveal";
@@ -28,6 +28,8 @@ const SERVIZI = [
   },
 ];
 
+const CTA_LETTERS = "Iniziamo.".split("");
+
 export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
   const heroRef = useRef<HTMLDivElement>(null);
   const line1Ref = useRef<HTMLDivElement>(null);
@@ -35,13 +37,17 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
-  const marqueeRef = useRef<HTMLDivElement>(null);
+  const ctaTitleRef = useRef<HTMLHeadingElement>(null);
+
+  const numberRefs = useRef<HTMLSpanElement[]>([]);
+  const arrowRefs = useRef<HTMLSpanElement[]>([]);
 
   const serviziRef = useReveal<HTMLDivElement>({ direction: "up", stagger: 0.12 });
-  const ctaSezioneRef = useReveal<HTMLDivElement>({ direction: "fade", delay: 0.2 });
 
+  const [marqueePaused, setMarqueePaused] = useState(false);
   const isMobile = useIsMobile();
 
+  // Hero animation (once)
   useEffect(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ delay: 0.4 });
@@ -52,9 +58,9 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
         { scaleX: 1, duration: 1, ease: "power3.inOut", transformOrigin: "left" }
       )
         .fromTo(
-          titleRef.current,
-          { yPercent: 110, opacity: 0 },
-          { yPercent: 0, opacity: 1, duration: 1.1, ease: "power3.out" },
+          titleRef.current?.querySelectorAll("[data-word]") ?? [],
+          { yPercent: 100 },
+          { yPercent: 0, stagger: 0.08, duration: 0.9, ease: "power3.out" },
           "-=0.6"
         )
         .fromTo(
@@ -75,26 +81,83 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" },
           "-=0.3"
         );
-
-      if (marqueeRef.current) {
-        gsap.to(marqueeRef.current, {
-          xPercent: -50,
-          ease: "none",
-          scrollTrigger: {
-            trigger: marqueeRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
-      }
     });
 
     return () => ctx.revert();
   }, []);
 
+  // CTA title split animation (dipende da isMobile)
+  useEffect(() => {
+    if (!ctaTitleRef.current) return;
+    const letterSpans = ctaTitleRef.current.querySelectorAll("[data-letter]");
+    if (!letterSpans.length) return;
+
+    const ctx = gsap.context(() => {
+      if (!isMobile) {
+        gsap.fromTo(
+          letterSpans,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            stagger: 0.04,
+            duration: 0.6,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: ctaTitleRef.current,
+              start: "top 80%",
+              once: true,
+            },
+          }
+        );
+      } else {
+        gsap.fromTo(
+          letterSpans,
+          { opacity: 0 },
+          {
+            opacity: 1,
+            duration: 0.6,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: ctaTitleRef.current,
+              start: "top 80%",
+              once: true,
+            },
+          }
+        );
+      }
+    });
+
+    return () => ctx.revert();
+  }, [isMobile]);
+
+  const handleCardEnter = (i: number) => {
+    if (isMobile) return;
+    const num = numberRefs.current[i];
+    const arrow = arrowRefs.current[i];
+    if (!num || !arrow) return;
+    gsap.to(num, { yPercent: -100, opacity: 0, duration: 0.3, ease: "power2.in" });
+    gsap.to(arrow, { yPercent: 0, opacity: 1, duration: 0.3, ease: "power2.out", delay: 0.05 });
+  };
+
+  const handleCardLeave = (i: number) => {
+    if (isMobile) return;
+    const num = numberRefs.current[i];
+    const arrow = arrowRefs.current[i];
+    if (!num || !arrow) return;
+    gsap.to(num, { yPercent: 0, opacity: 1, duration: 0.3, ease: "power2.out" });
+    gsap.to(arrow, { yPercent: 100, opacity: 0, duration: 0.3, ease: "power2.in" });
+  };
+
   return (
     <main>
+      <style>{`
+        @keyframes marqueeScroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+      `}</style>
+
       {/* ── HERO ── */}
       <section
         ref={heroRef}
@@ -134,7 +197,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           }}
         />
 
-        <div style={{ overflow: "hidden", marginBottom: "1.5rem" }}>
+        <div style={{ marginBottom: "1.5rem" }}>
           <h1
             ref={titleRef}
             style={{
@@ -142,17 +205,28 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               fontSize: "clamp(3rem, 14vw, 10rem)",
               lineHeight: 0.95,
               color: "var(--color-fg)",
-              opacity: 0,
             }}
           >
-            Francesco
-            <br />
-            Battisti
-            <br />
-            <span style={{ color: "var(--color-accent)" }}>WordPress</span>
-            <br />
-            <span style={{ color: "transparent", WebkitTextStroke: "1px var(--color-muted)" }}>
-              Developer
+            <span style={{ overflow: "hidden", display: "block" }}>
+              <span data-word style={{ display: "inline-block" }}>Francesco</span>
+            </span>
+            <span style={{ overflow: "hidden", display: "block" }}>
+              <span data-word style={{ display: "inline-block" }}>Battisti</span>
+            </span>
+            <span style={{ overflow: "hidden", display: "block", color: "var(--color-accent)" }}>
+              <span data-word style={{ display: "inline-block" }}>WordPress</span>
+            </span>
+            <span style={{ overflow: "hidden", display: "block" }}>
+              <span
+                data-word
+                style={{
+                  display: "inline-block",
+                  color: "transparent",
+                  WebkitTextStroke: "1px var(--color-muted)",
+                }}
+              >
+                Developer
+              </span>
             </span>
           </h1>
         </div>
@@ -252,14 +326,17 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           borderBottom: "1px solid var(--color-border)",
           overflow: "hidden",
         }}
+        onMouseEnter={() => { if (!isMobile) setMarqueePaused(true); }}
+        onMouseLeave={() => { if (!isMobile) setMarqueePaused(false); }}
       >
         <div
-          ref={marqueeRef}
           style={{
             display: "flex",
             gap: "2rem",
             whiteSpace: "nowrap",
             width: "200%",
+            animation: "marqueeScroll 20s linear infinite",
+            animationPlayState: marqueePaused ? "paused" : "running",
           }}
         >
           {["WORDPRESS", "E-COMMERCE", "SEO", "PERFORMANCE", "WORDPRESS", "E-COMMERCE", "SEO", "PERFORMANCE"].map((testo, i) => (
@@ -326,9 +403,11 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
             backgroundColor: "var(--color-border)",
           }}
         >
-          {SERVIZI.map((servizio) => (
+          {SERVIZI.map((servizio, i) => (
             <div
               key={servizio.numero}
+              onMouseEnter={() => handleCardEnter(i)}
+              onMouseLeave={() => handleCardLeave(i)}
               style={{
                 backgroundColor: "var(--color-bg)",
                 padding: isMobile ? "2rem 1.25rem" : "3rem 2rem",
@@ -337,16 +416,46 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
                 gap: "1rem",
               }}
             >
-              <span
+              {/* Numero + Freccia */}
+              <div
                 style={{
-                  fontSize: "0.7rem",
-                  color: "var(--color-text-muted)",
-                  letterSpacing: "0.15em",
-                  fontFamily: "var(--font-body)",
+                  position: "relative",
+                  height: "1.1rem",
+                  overflow: "hidden",
                 }}
               >
-                {servizio.numero}
-              </span>
+                <span
+                  ref={(el) => { if (el) numberRefs.current[i] = el; }}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    fontSize: "0.7rem",
+                    color: "var(--color-text-muted)",
+                    letterSpacing: "0.15em",
+                    fontFamily: "var(--font-body)",
+                  }}
+                >
+                  {servizio.numero}
+                </span>
+                <span
+                  ref={(el) => { if (el) arrowRefs.current[i] = el; }}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    fontSize: "0.7rem",
+                    color: "var(--color-text-muted)",
+                    letterSpacing: "0.15em",
+                    fontFamily: "var(--font-body)",
+                    opacity: 0,
+                    transform: "translateY(100%)",
+                  }}
+                >
+                  →
+                </span>
+              </div>
+
               <h3
                 style={{
                   fontFamily: "var(--font-display)",
@@ -390,7 +499,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           textAlign: "center",
         }}
       >
-        <div ref={ctaSezioneRef}>
+        <div>
           <p
             style={{
               fontSize: "0.75rem",
@@ -404,6 +513,8 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
             Hai un progetto in mente?
           </p>
           <h2
+            ref={ctaTitleRef}
+            aria-label="Iniziamo."
             style={{
               fontFamily: "var(--font-display)",
               fontSize: isMobile ? "clamp(2.5rem, 12vw, 4rem)" : "clamp(3rem, 8vw, 8rem)",
@@ -411,10 +522,19 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
               marginBottom: "2.5rem",
             }}
           >
-            Iniziamo.
+            {CTA_LETTERS.map((letter, i) => (
+              <span
+                key={i}
+                data-letter
+                style={{ display: "inline-block", opacity: 0 }}
+              >
+                {letter}
+              </span>
+            ))}
           </h2>
           <Link
             href="/contatti"
+            className="cta-magnetic"
             style={{
               display: "inline-block",
               fontFamily: "var(--font-body)",

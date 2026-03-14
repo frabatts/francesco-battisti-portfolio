@@ -6,6 +6,7 @@ import { gsap } from "@/lib/gsap/config";
 import DOMPurify from "isomorphic-dompurify";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import type { ProgettoFull } from "@/types/wordpress";
+import ReadingProgress from "@/components/ui/ReadingProgress";
 
 export default function ProgettoDetail({ progetto }: { progetto: ProgettoFull }) {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -39,6 +40,7 @@ export default function ProgettoDetail({ progetto }: { progetto: ProgettoFull })
 
   return (
     <main>
+      <ReadingProgress />
       {/* ── HERO ── */}
       <section
         style={{
