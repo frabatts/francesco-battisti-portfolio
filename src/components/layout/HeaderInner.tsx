@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap/config";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { normalizeUrl } from "@/lib/utils";
+import ThemeSwitch from "@/components/ui/ThemeSwitch";
 
 interface MenuItem {
   id: string;
@@ -16,40 +17,22 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
   const headerRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const navLinksRef = useRef<HTMLUListElement>(null);
-  const logoOverlayRef = useRef<HTMLSpanElement>(null);
+  const logoRef = useRef<HTMLAnchorElement>(null);
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
-  const [logoColor, setLogoColor] = useState<string>("var(--color-fg)");
 
   const activeLineRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const hoverLineRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  // Logo adattivo: osserva sezioni con data-theme="light"
+  // Entrata logo — GSAP gestisce SOLO opacity e transform (y)
+  // Il colore è gestito interamente da CSS variables (var(--color-fg))
   useEffect(() => {
-    const sections = document.querySelectorAll<HTMLElement>("[data-theme='light']");
-    if (!sections.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const anyVisible = entries.some((entry) => entry.intersectionRatio >= 0.5);
-        setLogoColor(anyVisible ? "var(--color-bg)" : "var(--color-fg)");
-      },
-      { threshold: [0, 0.5, 1] }
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, [pathname]);
-
-  // Entrata logo overlay (fuori dall'header per permettere mix-blend-mode)
-  useEffect(() => {
+    const el = logoRef.current;
+    if (!el) return;
+    gsap.set(el, { opacity: 0, y: -20 });
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        logoOverlayRef.current,
-        { opacity: 0, y: -20 },
-        { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", delay: 0.2 }
-      );
+      gsap.to(el, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out", delay: 0.2 });
     });
     return () => ctx.revert();
   }, []);
@@ -141,20 +124,20 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
           justifyContent: "space-between",
         }}
       >
-        {/* Logo originale — invisibile, mantiene lo spazio e il click */}
+        {/* Logo — elemento unico, colore gestito da CSS variables */}
         <Link
+          ref={logoRef}
           href="/"
           aria-label="Homepage"
+          className="gsap-animated"
           style={{
             fontFamily: "var(--font-display)",
             fontSize: "1.6rem",
             letterSpacing: "0.05em",
-            color: logoColor,
+            color: "var(--color-fg)",
             zIndex: 110,
             position: "relative",
             display: "inline-block",
-            opacity: 0,
-            pointerEvents: "all",
           }}
         >
           FB
@@ -162,159 +145,145 @@ export default function HeaderInner({ menuItems }: { menuItems: MenuItem[] }) {
 
         {/* Nav desktop */}
         {!isMobile && (
-          <nav>
-            <ul
-              style={{
-                display: "flex",
-                gap: "2.5rem",
-                listStyle: "none",
-                margin: 0,
-                padding: 0,
-              }}
-            >
-              {menuItems.map((item) => {
-                const isActive = pathname === normalizeUrl(item.url);
-                return (
-                  <li key={item.id}>
-                    <Link
-                      href={normalizeUrl(item.url)}
-                      style={{
-                        fontFamily: "var(--font-body)",
-                        fontSize: "0.8rem",
-                        fontWeight: 300,
-                        letterSpacing: "0.12em",
-                        textTransform: "uppercase",
-                        color: isActive ? "var(--color-accent)" : "var(--color-text-muted)",
-                        transition: "color 0.3s ease",
-                        display: "inline-block",
-                        paddingBottom: "4px",
-                        position: "relative",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive) {
-                          e.currentTarget.style.color = "var(--color-fg)";
-                          handleLinkEnter(item.id);
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive) {
-                          e.currentTarget.style.color = "var(--color-text-muted)";
-                          handleLinkLeave(item.id);
-                        }
-                      }}
-                    >
-                      {item.label}
-
-                      {/* Indicatore pagina attiva */}
-                      {isActive && (
-                        <div
-                          ref={(el) => {
-                            if (el) activeLineRefs.current.set(item.id, el);
-                            else activeLineRefs.current.delete(item.id);
-                          }}
-                          style={{
-                            position: "absolute",
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: "1px",
-                            backgroundColor: "var(--color-accent)",
-                            transform: "scaleX(0)",
-                            transformOrigin: "left",
-                          }}
-                        />
-                      )}
-
-                      {/* Hover underline */}
-                      {!isActive && (
-                        <div
-                          ref={(el) => {
-                            if (el) hoverLineRefs.current.set(item.id, el);
-                            else hoverLineRefs.current.delete(item.id);
-                          }}
-                          style={{
-                            position: "absolute",
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            height: "1px",
-                            backgroundColor: "var(--color-fg)",
-                            transform: "scaleX(0)",
-                            transformOrigin: "left",
-                          }}
-                        />
-                      )}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        )}
-
-        {/* Hamburger / Close — mobile */}
-        {isMobile && (
-          <button
-            onClick={isOpen ? handleClose : handleOpen}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: "0.5rem",
-              zIndex: 110,
-              position: "relative",
-              display: "flex",
-              flexDirection: "column",
-              gap: "5px",
-              alignItems: "flex-end",
-            }}
-            aria-label={isOpen ? "Chiudi menu" : "Apri menu"}
-            aria-expanded={isOpen}
-            aria-controls="mobile-menu"
-          >
-            {isOpen ? (
-              <span
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <nav>
+              <ul
                 style={{
-                  fontFamily: "var(--font-body)",
-                  fontSize: "0.7rem",
-                  letterSpacing: "0.15em",
-                  textTransform: "uppercase",
-                  color: "var(--color-fg)",
-                  transition: "color 0.3s ease",
+                  display: "flex",
+                  gap: "2.5rem",
+                  listStyle: "none",
+                  margin: 0,
+                  padding: 0,
                 }}
               >
-                Chiudi
-              </span>
-            ) : (
-              <>
-                <span style={{ display: "block", width: "24px", height: "1px", backgroundColor: "var(--color-fg)" }} />
-                <span style={{ display: "block", width: "16px", height: "1px", backgroundColor: "var(--color-fg)" }} />
-              </>
-            )}
-          </button>
+                {menuItems.map((item) => {
+                  const isActive = pathname === normalizeUrl(item.url);
+                  return (
+                    <li key={item.id}>
+                      <Link
+                        href={normalizeUrl(item.url)}
+                        style={{
+                          fontFamily: "var(--font-body)",
+                          fontSize: "0.8rem",
+                          fontWeight: 300,
+                          letterSpacing: "0.12em",
+                          textTransform: "uppercase",
+                          color: isActive ? "var(--color-accent)" : "var(--color-text-muted)",
+                          transition: "color 0.3s ease",
+                          display: "inline-block",
+                          paddingBottom: "4px",
+                          position: "relative",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isActive) {
+                            e.currentTarget.style.color = "var(--color-fg)";
+                            handleLinkEnter(item.id);
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isActive) {
+                            e.currentTarget.style.color = "var(--color-text-muted)";
+                            handleLinkLeave(item.id);
+                          }
+                        }}
+                      >
+                        {item.label}
+
+                        {/* Indicatore pagina attiva */}
+                        {isActive && (
+                          <div
+                            ref={(el) => {
+                              if (el) activeLineRefs.current.set(item.id, el);
+                              else activeLineRefs.current.delete(item.id);
+                            }}
+                            style={{
+                              position: "absolute",
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              height: "1px",
+                              backgroundColor: "var(--color-accent)",
+                              transform: "scaleX(0)",
+                              transformOrigin: "left",
+                            }}
+                          />
+                        )}
+
+                        {/* Hover underline */}
+                        {!isActive && (
+                          <div
+                            ref={(el) => {
+                              if (el) hoverLineRefs.current.set(item.id, el);
+                              else hoverLineRefs.current.delete(item.id);
+                            }}
+                            style={{
+                              position: "absolute",
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              height: "1px",
+                              backgroundColor: "var(--color-fg)",
+                              transform: "scaleX(0)",
+                              transformOrigin: "left",
+                            }}
+                          />
+                        )}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+            <div style={{ display: "flex", alignItems: "center", marginLeft: "1.5rem", gap: "0.75rem" }}>
+              <span style={{ width: "1px", height: "12px", backgroundColor: "var(--color-border)", display: "inline-block" }} />
+              <ThemeSwitch />
+            </div>
+          </div>
+        )}
+
+        {/* ThemeSwitch + Hamburger / Close — mobile */}
+        {isMobile && (
+          <div style={{ display: "flex", alignItems: "center", gap: "0.25rem", zIndex: 110, position: "relative" }}>
+            <ThemeSwitch />
+            <button
+              onClick={isOpen ? handleClose : handleOpen}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "0.5rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px",
+                alignItems: "flex-end",
+              }}
+              aria-label={isOpen ? "Chiudi menu" : "Apri menu"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-menu"
+            >
+              {isOpen ? (
+                <span
+                  style={{
+                    fontFamily: "var(--font-body)",
+                    fontSize: "0.7rem",
+                    letterSpacing: "0.15em",
+                    textTransform: "uppercase",
+                    color: "var(--color-fg)",
+                    transition: "color 0.3s ease",
+                  }}
+                >
+                  Chiudi
+                </span>
+              ) : (
+                <>
+                  <span style={{ display: "block", width: "24px", height: "1px", backgroundColor: "var(--color-fg)" }} />
+                  <span style={{ display: "block", width: "16px", height: "1px", backgroundColor: "var(--color-fg)" }} />
+                </>
+              )}
+            </button>
+          </div>
         )}
       </header>
-
-      {/* Logo overlay — fixed, fuori dall'header per mix-blend-mode: difference */}
-      <span
-        ref={logoOverlayRef}
-        aria-hidden="true"
-        style={{
-          position: "fixed",
-          top: "1.5rem",
-          left: isMobile ? "1.25rem" : "2rem",
-          zIndex: 150,
-          fontFamily: "var(--font-display)",
-          fontSize: "1.6rem",
-          letterSpacing: "0.05em",
-          color: "#ffffff",
-          mixBlendMode: "difference",
-          pointerEvents: "none",
-          opacity: 0,
-        }}
-      >
-        FB
-      </span>
 
       {/* Overlay menu mobile fullscreen */}
       <div

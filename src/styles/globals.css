@@ -28,8 +28,18 @@
   --transition-slow: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+[data-theme="light"] {
+  --color-bg: #f0ede6;
+  --color-fg: #080808;
+  --color-accent: #6b5a3e;
+  --color-border: #e0d9d0;
+  --color-muted: #c8c0b8;
+  --color-text-muted: #6b6560;
+}
+
 html {
   background-color: var(--color-bg);
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 @media (min-width: 769px) {
@@ -133,4 +143,14 @@ body::after {
 ::selection {
   background: var(--color-accent);
   color: var(--color-bg);
+}
+
+/* Transizione globale tema */
+* {
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+}
+
+/* Escludi elementi animati da GSAP dalla transizione globale */
+.gsap-animated {
+  transition: none !important;
 }

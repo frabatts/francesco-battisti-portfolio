@@ -2,10 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap/config";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const followerRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const cursor = cursorRef.current;
@@ -103,10 +105,11 @@ export default function CustomCursor() {
           width: 8,
           height: 8,
           borderRadius: "50%",
-          backgroundColor: "var(--color-fg)",
+          backgroundColor: theme === "dark" ? "#ffffff" : "var(--color-fg)",
           pointerEvents: "none",
           zIndex: 9999,
-          mixBlendMode: "difference",
+          mixBlendMode: theme === "dark" ? "difference" : "normal",
+          transition: "none",
         }}
       />
 
@@ -120,11 +123,12 @@ export default function CustomCursor() {
           width: 40,
           height: 40,
           borderRadius: "50%",
-          border: "1px solid var(--color-fg)",
+          border: theme === "dark" ? "1px solid #ffffff" : "1px solid var(--color-fg)",
           pointerEvents: "none",
           zIndex: 9998,
           opacity: 0.5,
-          mixBlendMode: "difference",
+          mixBlendMode: theme === "dark" ? "difference" : "normal",
+          transition: "none",
         }}
       />
     </>

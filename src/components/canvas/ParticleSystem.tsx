@@ -1,11 +1,11 @@
 "use client";
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useTransition } from "@/context/TransitionContext";
+import { useTheme } from "@/context/ThemeContext";
 
 const PARTICLE_COUNT = 1000;
-const COLOR_DEFAULT = new THREE.Color("#ffffff");
 const COLOR_GLOW = new THREE.Color("#ffffff");
 const REPULSE_RADIUS = 4;
 
@@ -17,6 +17,24 @@ export default function ParticleSystem({ mouseRef }: Props) {
   const meshRef = useRef<THREE.Points>(null);
   const { viewport, camera } = useThree();
   const { particleIntensityRef } = useTransition();
+  const { theme } = useTheme();
+
+  // Target colore materiale e opacity (base + vortice) per tema — usati in useFrame
+  const matColorTargetRef = useRef(new THREE.Color("#ffffff"));
+  const particleBaseOpacityRef = useRef(0.6);
+  const particleVortexOpacityRef = useRef(1.0);
+
+  useEffect(() => {
+    if (theme === "light") {
+      matColorTargetRef.current = new THREE.Color("#080808");
+      particleBaseOpacityRef.current = 0.4;
+      particleVortexOpacityRef.current = 0.8;
+    } else {
+      matColorTargetRef.current = new THREE.Color("#ffffff");
+      particleBaseOpacityRef.current = 0.6;
+      particleVortexOpacityRef.current = 1.0;
+    }
+  }, [theme]);
 
   const angles = useRef<Float32Array>(new Float32Array(PARTICLE_COUNT));
   const radii = useRef<Float32Array>(new Float32Array(PARTICLE_COUNT));
@@ -47,11 +65,11 @@ export default function ParticleSystem({ mouseRef }: Props) {
       radii.current[i] = Math.sqrt(x * x + y * y);
       depthSpeeds.current[i] = 0.5 + Math.random() * 1.5;
 
-      // Sempre bianche con leggera variazione di opacità per sembrare offuscate
+      // Bianche di default con leggera variazione di luminosità
       const brightness = 0.6 + Math.random() * 0.4;
-      colors[i * 3] = COLOR_DEFAULT.r * brightness;
-      colors[i * 3 + 1] = COLOR_DEFAULT.g * brightness;
-      colors[i * 3 + 2] = COLOR_DEFAULT.b * brightness;
+      colors[i * 3] = brightness;
+      colors[i * 3 + 1] = brightness;
+      colors[i * 3 + 2] = brightness;
     }
 
     return { positions, speeds, originalPositions, colors };
@@ -147,17 +165,27 @@ export default function ParticleSystem({ mouseRef }: Props) {
           // Nessun cambio colore — rimane sempre bianca
         }
 
-        // Torna sempre al bianco offuscato
+        // Vertex colors sempre 0.6-1.0 (brightness multiplier puro)
+        // Il colore effettivo è gestito da mat.color
         const brightness = 0.6 + (i % 10) / 10 * 0.4;
-        col[ix] = THREE.MathUtils.lerp(col[ix], COLOR_DEFAULT.r * brightness, 0.03);
-        col[iy] = THREE.MathUtils.lerp(col[iy], COLOR_DEFAULT.g * brightness, 0.03);
-        col[iz] = THREE.MathUtils.lerp(col[iz], COLOR_DEFAULT.b * brightness, 0.03);
+        col[ix] = THREE.MathUtils.lerp(col[ix], brightness, 0.03);
+        col[iy] = col[ix];
+        col[iz] = col[ix];
       }
     }
 
     // Dimensione particelle cresce durante vortice
     const targetSize = THREE.MathUtils.lerp(0.035, 0.075, intensity);
     mat.size = THREE.MathUtils.lerp(mat.size, targetSize, 0.08);
+
+    // Colore materiale lerp verso tema (moltiplica i vertex colors)
+    mat.color.lerp(matColorTargetRef.current, 0.03);
+
+    // Opacity: base o vortice, dipende dallo stato
+    const targetOpacity = isVortex
+      ? particleVortexOpacityRef.current
+      : particleBaseOpacityRef.current;
+    mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.05);
 
     meshRef.current.geometry.attributes.position.needsUpdate = true;
     meshRef.current.geometry.attributes.color.needsUpdate = true;
@@ -173,7 +201,7 @@ export default function ParticleSystem({ mouseRef }: Props) {
       <pointsMaterial
         size={0.035}
         transparent
-        opacity={1}
+        opacity={0.6}
         sizeAttenuation
         vertexColors
         alphaTest={0.001}

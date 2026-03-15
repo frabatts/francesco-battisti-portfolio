@@ -9,6 +9,7 @@ import Footer from "@/components/layout/Footer";
 import CustomCursor from "@/components/ui/CustomCursor";
 import ScrollToTop from "@/components/ui/ScrollToTop";
 import { TransitionProvider } from "@/context/TransitionContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -60,20 +61,22 @@ export default function RootLayout({
   return (
     <html lang="it" className={`${bebasNeue.variable} ${dmSans.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <TransitionProvider>
-          <LenisProvider>
-            <CustomCursor />
-            <ScrollToTop />
-            <SceneLoader />
-            <div id="content">
-              <Header />
-              <PageTransition>
-                {children}
-              </PageTransition>
-              <Footer />
-            </div>
-          </LenisProvider>
-        </TransitionProvider>
+        <ThemeProvider>
+          <TransitionProvider>
+            <LenisProvider>
+              <CustomCursor />
+              <ScrollToTop />
+              <SceneLoader />
+              <div id="content">
+                <Header />
+                <PageTransition>
+                  {children}
+                </PageTransition>
+                <Footer />
+              </div>
+            </LenisProvider>
+          </TransitionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -187,6 +187,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
 
         <div
           ref={line1Ref}
+          className="gsap-animated"
           style={{
             position: "absolute",
             top: "50%",
@@ -200,6 +201,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
         <div style={{ marginBottom: "1.5rem" }}>
           <h1
             ref={titleRef}
+            className="gsap-animated"
             style={{
               fontFamily: "var(--font-display)",
               fontSize: "clamp(3rem, 14vw, 10rem)",
@@ -233,6 +235,7 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
 
         <div
           ref={line2Ref}
+          className="gsap-animated"
           style={{
             width: "100%",
             height: "1px",
@@ -343,14 +346,24 @@ export default function HomeClient({ progetti }: { progetti: Progetto[] }) {
           {["WORDPRESS", "E-COMMERCE", "SEO", "PERFORMANCE", "WORDPRESS", "E-COMMERCE", "SEO", "PERFORMANCE"].map((testo, i) => (
             <span
               key={i}
-              style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "clamp(1.8rem, 5vw, 4rem)",
-                color: i % 2 === 0 ? "var(--color-fg)" : "transparent",
-                WebkitTextStroke: i % 2 !== 0 ? "1px var(--color-fg)" : "none",
-                letterSpacing: "0.05em",
-                marginRight: "2rem",
-              }}
+              style={
+                i % 2 === 0
+                  ? {
+                      fontFamily: "var(--font-display)",
+                      color: "var(--color-fg)",
+                      fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
+                      letterSpacing: "0.05em",
+                      marginRight: "2rem",
+                    }
+                  : {
+                      fontFamily: "var(--font-display)",
+                      color: "transparent",
+                      WebkitTextStroke: "1px var(--color-fg)",
+                      fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
+                      letterSpacing: "0.05em",
+                      marginRight: "2rem",
+                    }
+              }
             >
               {testo}
             </span>
